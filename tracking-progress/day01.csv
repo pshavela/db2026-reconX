@@ -1,0 +1,2 @@
+Ticket,Status,Comment
+TICKET-ADV007,Completed,H2 database instead of PostGreSQL in dev;Fixed backend config errors;trades data not available
