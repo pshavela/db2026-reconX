@@ -3,3 +3,7 @@ TICKET-ADV007,Completed,Fixed backend config errors;H2 database instead of Postg
 TICKET-ADV008,Completed,Nothing to do;same as previous ticket - H2 database instead of PostgreSQL
 TICKET-ADV009,Completed,Nothing to do;same as previous ticket - H2 database instead of PostgreSQL
 TICKET-ADV010,Completed,DISTINCT effectively groups instruments though task specifically asks to output for every trade row
+TICKET-ADV011,Completed,Nothing to do
+TICKET-ADV012,Completed,Nothing to do
+TICKET-ADV013,Completed,Nothing to do
+TICKET-ADV014,Completed,Nothing to do
