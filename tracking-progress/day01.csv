@@ -1,2 +1,2 @@
 Ticket,Status,Comment
-TICKET-ADV007,Completed,H2 database instead of PostGreSQL in dev;Fixed backend config errors;trades data not available
+TICKET-ADV007,Completed,Fixed backend config errors;H2 database instead of PostgreSQL in dev;range partitioning not applied on `trade_date` as not possible post-schema table creation - also cant drop/recreate table `trades` as `id` is foreign key in `settlements` table
