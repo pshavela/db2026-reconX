@@ -1,4 +1,5 @@
 Ticket,Status,Comment
 TICKET-ADV007,Completed,Fixed backend config errors;H2 database instead of PostgreSQL in dev;range partitioning not applied on `trade_date` as not possible post-schema table creation - also cant drop/recreate table `trades` as `id` is foreign key in `settlements` table
-TICKET-ADV008,Completed,Nothing to do, same as previous ticket - H2 database instead of PostgreSQL
-TICKET-ADV009,Completed,Nothing to do, same as previous ticket - H2 database instead of PostgreSQL
+TICKET-ADV008,Completed,Nothing to do;same as previous ticket - H2 database instead of PostgreSQL
+TICKET-ADV009,Completed,Nothing to do;same as previous ticket - H2 database instead of PostgreSQL
+TICKET-ADV010,Completed,DISTINCT effectively groups instruments though task specifically asks to output for every trade row

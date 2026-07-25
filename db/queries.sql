@@ -1,7 +1,7 @@
 -- ============================================================================
 -- TICKET-ADV010 — VWAP per instrument per day (window function)
 -- ============================================================================
-SELECT DISTINCT
+SELECT -- DISTINCT
     t.instrument_id,
     t.trade_date,
     SUM(t.price * t.quantity) OVER (PARTITION BY t.instrument_id, t.trade_date)
