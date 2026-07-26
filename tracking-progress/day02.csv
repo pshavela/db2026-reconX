@@ -1,2 +1,8 @@
 Ticket,Status,Comment
 TICKET-ADV018,Completed,Nothing to add
+TICKET-ADV019,Completed,Added builder pattern and `EquityTrade` unit tests
+TICKET-ADV020,Completed,Added builder pattern;`isin` validation deferred to TICKET-ADV29
+TICKET-ADV021,Completed,Added builder pattern;`isin` validation deferred to TICKET-ADV29
+TICKET-ADV022,Completed,Added builder pattern
+TICKET-ADV023,Completed,Added `TradeFactory` class
+TICKET-ADV024,Completed,Updated `Money` class
