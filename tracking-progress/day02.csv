@@ -13,3 +13,4 @@ TICKET-ADV028,Completed,Added `equals` and `hashCode` to all different trade typ
 TICKET-ADV029,Completed,Nothing to do
 TICKET-ADV030,Completed,Added handcoded `toString` to each trade type
 TICKET-ADV031,Ongoing,Add javadoc on every public type in `model/` and `exception/`
+TICKET-ADV032,Completed,Create simple pull request
