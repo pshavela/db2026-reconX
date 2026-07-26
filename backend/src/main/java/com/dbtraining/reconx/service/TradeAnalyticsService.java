@@ -1,7 +1,7 @@
 package com.dbtraining.reconx.service;
 
-import com.dbtraining.reconx.model.EquityTrade;
-import com.dbtraining.reconx.model.TradeType;
+import com.dbtraining.reconx.model.*;
+import com.dbtraining.reconx.repository.entity.Trade;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -22,11 +22,16 @@ public class TradeAnalyticsService {
 
     /** TICKET-ADV034 — count + sum of notional per counterparty. */
     public Map<Long, NotionalSummary> notionalByCounterparty(List<? extends TradeType> trades) {
-        // TODO(TICKET-ADV034): Collectors.groupingBy(this::counterpartyIdOf,
-        //   Collectors.collectingAndThen(toList(), list -> new NotionalSummary(
-        //       list.size(),
-        //       list.stream().map(t -> t.notional().amount()).reduce(ZERO, BigDecimal::add)))).
-        throw new UnsupportedOperationException("TICKET-ADV034");
+        return trades.stream().collect(Collectors.groupingBy(
+                this::counterpartyIdOf,
+                Collectors.collectingAndThen(
+                        Collectors.toList(),
+                        list -> new NotionalSummary(
+                                list.size(),
+                                list.stream()
+                                        .map(t -> t.notional().amount())
+                                        .reduce(BigDecimal.ZERO, BigDecimal::add))
+                )));
     }
 
     /**
@@ -55,9 +60,12 @@ public class TradeAnalyticsService {
     }
 
     private long counterpartyIdOf(TradeType t) {
-        // TODO(TICKET-ADV018): exhaustive switch over the sealed TradeType
-        //   hierarchy returning t.counterpartyId() for each concrete subtype.
-        throw new UnsupportedOperationException("TICKET-ADV018");
+        return switch(t) {
+            case BondTrade bondTrade -> bondTrade.counterpartyId();
+            case DerivativeTrade derivativeTrade -> derivativeTrade.counterpartyId();
+            case EquityTrade equityTrade -> equityTrade.counterpartyId();
+            case FXTrade fxTrade -> fxTrade.counterpartyId();
+        };
     }
 
     public record NotionalSummary(long count, BigDecimal total) {}

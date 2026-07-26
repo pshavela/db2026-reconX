@@ -1,2 +1,3 @@
 Ticket,Status,Comment
 TICKET-ADV033,Completed,Added reconciliation mechanism
+TICKET-ADV034,Completed,Added `NotionalSummary` computation
