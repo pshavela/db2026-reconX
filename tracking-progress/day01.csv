@@ -8,3 +8,5 @@ TICKET-ADV012,Completed,Nothing to do
 TICKET-ADV013,Completed,Nothing to do
 TICKET-ADV014,Completed,Nothing to do
 TICKET-ADV015,TODO,ADRs on work laptop
+TICKET-ADV016,In Review,Github Project - table created
+TICKET-ADV017,Completed,`db/seed_data.sql` added - only for PostgreSQL as JSONB not available in H2
