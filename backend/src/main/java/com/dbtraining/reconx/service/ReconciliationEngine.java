@@ -1,17 +1,20 @@
 package com.dbtraining.reconx.service;
 
-import com.dbtraining.reconx.dto.ReconResult;
-import com.dbtraining.reconx.model.ReconciliationRule;
-import com.dbtraining.reconx.model.TradeType;
-import io.micrometer.core.annotation.Timed;
-import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
+import com.dbtraining.reconx.dto.ReconResult;
+import com.dbtraining.reconx.model.ReconciliationRule;
+import com.dbtraining.reconx.model.TradeRef;
+import com.dbtraining.reconx.model.TradeType;
+
+import io.micrometer.core.annotation.Timed;
 
 /**
  * ============================================================================
@@ -39,17 +42,16 @@ public class ReconciliationEngine {
     public List<ReconResult> reconcile(List<TradeType> internal,
                                        List<TradeType> external,
                                        ReconciliationRule rule) {
-        // TODO(TICKET-ADV033): build a Map<tradeRef, TradeType> from `external`
-        //   (O(1) lookups beat O(n*m) nested iteration), then parallelStream
-        //   over `internal` and call matchOne(in, externalByRef.get(...), rule)
-        //   for each. Guard against null/empty inputs (TICKET-ADV047).
-        //   HINT:
-        //     Map<String, TradeType> externalByRef = external.stream()
-        //         .collect(Collectors.toMap(t -> t.tradeRef().value(), Function.identity(), (a, b) -> a));
-        //     return internal.parallelStream()
-        //         .map(in -> matchOne(in, externalByRef.get(in.tradeRef().value()), rule))
-        //         .toList();
-        throw new UnsupportedOperationException("TICKET-ADV033");
+        if (internal == null || internal.isEmpty() || external == null || external.isEmpty()) {
+            return List.of();
+        }
+
+        Map<TradeRef, TradeType> externalTradeRefToTrade = external.stream()
+            .collect(Collectors.toMap(TradeType::tradeRef, Function.identity(), (a, b) -> a));
+
+        return internal.parallelStream()
+            .map(in -> matchOne(in, externalTradeRefToTrade.get(in.tradeRef()), rule))
+            .toList();
     }
 
     /**
