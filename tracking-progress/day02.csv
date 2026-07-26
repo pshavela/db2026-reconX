@@ -11,3 +11,4 @@ TICKET-ADV026,Completed,Added `ReconciliationRule` matching and unit correspondi
 TICKET-ADV027,Completed,Nothing to do
 TICKET-ADV028,Completed,Added `equals` and `hashCode` to all different trade types
 TICKET-ADV029,Completed,Nothing to do
+TICKET-ADV030,Completed,Added handcoded `toString` to each trade type
