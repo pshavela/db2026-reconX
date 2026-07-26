@@ -2,6 +2,8 @@ package com.dbtraining.reconx.service;
 
 import com.dbtraining.reconx.model.*;
 import com.dbtraining.reconx.repository.entity.Trade;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -19,6 +21,8 @@ import java.util.stream.Collectors;
  */
 @Service
 public class TradeAnalyticsService {
+
+    private static final Logger log = LoggerFactory.getLogger(TradeAnalyticsService.class);
 
     /** TICKET-ADV034 — count + sum of notional per counterparty. */
     public Map<Long, NotionalSummary> notionalByCounterparty(List<? extends TradeType> trades) {
@@ -39,11 +43,18 @@ public class TradeAnalyticsService {
      * EquityTrade has a meaningful price-volume pair.
      */
     public Map<String, BigDecimal> vwapByInstrument(List<EquityTrade> equityTrades) {
-        // TODO(TICKET-ADV035): group by EquityTrade::instrumentSymbol, then for
-        //   each bucket compute SUM(price * qty) / SUM(qty) using BigDecimal
-        //   with RoundingMode.HALF_UP. Return BigDecimal.ZERO when totalQty is 0
-        //   (avoid ArithmeticException on division by zero).
-        throw new UnsupportedOperationException("TICKET-ADV035");
+        return equityTrades.stream().collect(Collectors.groupingBy(EquityTrade::instrumentSymbol,
+                Collectors.collectingAndThen(Collectors.toList(), list -> {
+                            BigDecimal denominator = list.stream()
+                                    .map(EquityTrade::quantity)
+                                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                            BigDecimal numerator = list.stream()
+                                    .map(equityTrade -> equityTrade.price().multiply(equityTrade.quantity()))
+                                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                            return list.isEmpty() ? BigDecimal.ZERO : numerator.divide(denominator, 4, RoundingMode.HALF_UP);
+                        })));
     }
 
     /** TICKET-ADV036 — P&L per instrument symbol (sign by Side). */
