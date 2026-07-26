@@ -6,3 +6,5 @@ TICKET-ADV021,Completed,Added builder pattern;`isin` validation deferred to TICK
 TICKET-ADV022,Completed,Added builder pattern
 TICKET-ADV023,Completed,Added `TradeFactory` class
 TICKET-ADV024,Completed,Updated `Money` class
+TICKET-ADV025,Completed,Nothing to do
+TICKET-ADV026,Completed,Added `ReconciliationRule` matching and unit corresponding test
