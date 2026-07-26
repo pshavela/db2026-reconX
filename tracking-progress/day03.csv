@@ -2,3 +2,4 @@ Ticket,Status,Comment
 TICKET-ADV033,Completed,Added reconciliation mechanism
 TICKET-ADV034,Completed,Added `NotionalSummary` computation
 TICKET-ADV035,Completed,Added VWAP computation
+TICKET-ADV036,Completed,Added PnL grouped by Instrument computation
