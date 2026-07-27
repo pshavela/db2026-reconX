@@ -112,4 +112,40 @@ public class Trade {
     public void setPrice(BigDecimal v)        { this.price = v; }
     public void setTradeDate(LocalDate v)     { this.tradeDate = v; }
     public void setStatus(String v)           { this.status = v; }
+
+    public static class Builder {
+        private String tradeRef;
+        private Instrument instrument;
+        private Counterparty counterparty;
+        private String assetClass;
+        private String side;
+        private BigDecimal quantity;
+        private BigDecimal price;
+        private LocalDate tradeDate;
+        private String status = "PENDING";
+
+        public Builder tradeRef(String tradeRef) { this.tradeRef = tradeRef; return this; }
+        public Builder instrument(Instrument instrument) { this.instrument = instrument; return this; }
+        public Builder counterparty(Counterparty counterparty) { this.counterparty = counterparty; return this; }
+        public Builder assetClass(String assetClass) { this.assetClass = assetClass; return this; }
+        public Builder side(String side) { this.side = side; return this; }
+        public Builder quantity(BigDecimal quantity) { this.quantity = quantity; return this; }
+        public Builder price(BigDecimal price) { this.price = price; return this; }
+        public Builder tradeDate(LocalDate tradeDate) { this.tradeDate = tradeDate; return this; }
+        public Builder status(String status) { this.status = status; return this; }
+
+        public Trade build() {
+            Trade trade = new Trade();
+            trade.tradeRef = this.tradeRef;
+            trade.instrument = this.instrument;
+            trade.counterparty = this.counterparty;
+            trade.assetClass = this.assetClass;
+            trade.side = this.side;
+            trade.quantity = this.quantity;
+            trade.price = this.price;
+            trade.tradeDate = this.tradeDate;
+            trade.status = this.status;
+            return trade;
+        }
+    }
 }

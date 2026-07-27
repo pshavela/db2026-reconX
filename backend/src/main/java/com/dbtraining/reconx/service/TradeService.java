@@ -9,6 +9,8 @@ import com.dbtraining.reconx.repository.CounterpartyRepository;
 import com.dbtraining.reconx.repository.InstrumentRepository;
 import com.dbtraining.reconx.repository.TradeRepository;
 import com.dbtraining.reconx.repository.TradeSpecifications;
+import com.dbtraining.reconx.repository.entity.Counterparty;
+import com.dbtraining.reconx.repository.entity.Instrument;
 import com.dbtraining.reconx.repository.entity.Trade;
 import com.dbtraining.reconx.dto.TradeEvent;
 import org.springframework.data.domain.Page;
@@ -19,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.dbtraining.reconx.repository.TradeSpecifications.*;
@@ -63,7 +66,30 @@ public class TradeService {
         //   save, then:
         //     - metrics.incrementTradeCreated() + metrics.recordTradeValue(qty*price) — TICKET-ADV083
         //     - events.publish(new TradeEvent(... TRADE_CREATED ... actor ...)) — TICKET-ADV129
-        throw new UnsupportedOperationException("TICKET-ADV064");
+
+        if (tradeRepo.findByTradeRef(req.tradeRef()).isPresent()) {
+            throw new DuplicateTradeRefException(req.tradeRef());
+        }
+
+        Instrument instrument = instRepo.findById(req.instrumentId()).orElse(null);
+        Counterparty counterparty = cpRepo.findById(req.counterpartyId()).orElse(null);
+
+        if (instrument == null || counterparty == null) {
+            throw new TradeNotFoundException(req.tradeRef());
+        }
+
+        Trade trade = new Trade.Builder()
+                .tradeRef(req.tradeRef())
+                .instrument(instrument)
+                .counterparty(counterparty)
+                .assetClass(req.assetClass())
+                .side(req.side())
+                .quantity(req.quantity())
+                .price(req.price())
+                .tradeDate(req.tradeDate())
+                .build();
+
+        return tradeRepo.save(trade);
     }
 
     public Trade update(Long id, TradeRequest req, String actor) {
