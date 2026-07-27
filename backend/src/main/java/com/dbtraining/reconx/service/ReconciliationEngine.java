@@ -47,10 +47,12 @@ public class ReconciliationEngine {
     public List<ReconResult> reconcile(List<TradeType> internal,
                                        List<TradeType> external,
                                        ReconciliationRule rule) {
-        if (internal == null || internal.isEmpty() || external == null || external.isEmpty()) {
+        if (internal == null || internal.isEmpty() ) {
             return List.of();
         }
-
+        if(external==null){
+            external= List.<TradeType>of();
+        }
         Map<TradeRef, TradeType> externalTradeRefToTrade = external.stream()
                 .collect(Collectors.toMap(TradeType::tradeRef, Function.identity(), (a, b) -> a));
 
