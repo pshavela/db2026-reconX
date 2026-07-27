@@ -52,21 +52,44 @@ class ReconciliationEngineTest {
 
     @Test
     void testReconcile_missingCounterpartyTrade_returnsBreak() {
-        // TODO(TICKET-ADV042): internal trade with no external counterpart -> status BREAK,
-        //                     discrepancyType = "MISSING_EXTERNAL".
-        org.junit.jupiter.api.Assertions.fail("TICKET-ADV042 not implemented yet");
+        EquityTrade internal = equity("EQU-20260603-0003", "100.00", "1000");
+
+    List<ReconResult> out = engine.reconcile(List.of(internal), List.of(), ReconciliationRule.EXACT);
+
+    assertThat(out.get(0).status()).isEqualTo(ReconResult.Status.BREAK);
+    assertThat(out.get(0).discrepancyType()).isEqualTo("MISSING_EXTERNAL");
+    
     }
 
     @Test
     void testReconcile_emptyInternal_returnsEmpty() {
-        // given
-        // no trades on either side
+        List<ReconResult> results = engine.reconcile(List.of(), List.of(), ReconciliationRule.EXACT);
+        assertThat(results).isEmpty();
+    }
 
-        // when
-        List<ReconResult> out = engine.reconcile(List.of(), List.of(), ReconciliationRule.EXACT);
+    @Test
+    void testReconcile_singleInternalNoExternal_returnsBreakMissingExternal() {
+        EquityTrade internal = equity("EQU-20260603-0001", "100.00", "50");
+        List<ReconResult> results = engine.reconcile(List.of(internal), List.of(), ReconciliationRule.EXACT);
+        assertThat(results).hasSize(1);
+        assertThat(results.getFirst().status()).isEqualTo(ReconResult.Status.BREAK);
+        assertThat(results.getFirst().discrepancyType()).isEqualTo("MISSING_EXTERNAL");
+    }
 
-        // then
-        assertThat(out).isEmpty();
+    @Test
+    void testReconcile_allMismatched_returnsAllBreaks() {
+        EquityTrade in1 = equity("EQU-20260603-0001", "100.00", "50");
+        EquityTrade in2 = equity("EQU-20260603-0002", "200.00", "30");
+        EquityTrade in3 = equity("EQU-20260603-0003", "150.00", "20");
+        EquityTrade ex1 = equity("EQU-20260603-0001", "999.00", "50");
+        EquityTrade ex2 = equity("EQU-20260603-0002", "200.00", "999");
+        EquityTrade ex3 = equity("EQU-20260603-0003", "999.00", "999");
+        List<ReconResult> results = engine.reconcile(
+                List.of(in1, in2, in3), List.of(ex1, ex2, ex3), ReconciliationRule.EXACT);
+        assertThat(results).hasSize(3);
+        assertThat(results).allMatch(r -> r.status() == ReconResult.Status.BREAK);
+        long matched = results.stream().filter(r -> r.status() == ReconResult.Status.MATCHED).count();
+        assertThat(matched).isZero();
     }
 
     private EquityTrade equity(String ref, String price, String qty) {
