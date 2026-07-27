@@ -8,6 +8,7 @@ import com.dbtraining.reconx.observability.TradeMetrics;
 import com.dbtraining.reconx.repository.CounterpartyRepository;
 import com.dbtraining.reconx.repository.InstrumentRepository;
 import com.dbtraining.reconx.repository.TradeRepository;
+import com.dbtraining.reconx.repository.TradeSpecifications;
 import com.dbtraining.reconx.repository.entity.Trade;
 import com.dbtraining.reconx.dto.TradeEvent;
 import org.springframework.data.domain.Page;
@@ -85,10 +86,10 @@ public class TradeService {
 
     @Transactional(readOnly = true)
     public Page<Trade> list(LocalDate from, LocalDate to, String status, Long counterpartyId, Pageable pageable) {
-        // TODO(TICKET-ADV055 + TICKET-ADV056): combine the static helpers from
-        //   TradeSpecifications (hasStatus, tradeDateBetween, hasCounterparty)
-        //   via Specification.where(...).and(...) and call
-        //   tradeRepo.findAll(spec, pageable). Until JPA is in place, throw.
-        throw new UnsupportedOperationException("TICKET-ADV055");
+        return tradeRepo.findAll(
+                TradeSpecifications.hasCounterparty(counterpartyId)
+                        .and(TradeSpecifications.tradeDateBetween(from, to))
+                        .and(TradeSpecifications.hasStatus(status)),
+                pageable);
     }
 }
