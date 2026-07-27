@@ -10,6 +10,10 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.dbtraining.reconx.dto.ReconResult;
+import com.dbtraining.reconx.model.BondTrade;
+import com.dbtraining.reconx.model.DerivativeTrade;
+import com.dbtraining.reconx.model.EquityTrade;
+import com.dbtraining.reconx.model.FXTrade;
 import com.dbtraining.reconx.model.ReconciliationRule;
 import com.dbtraining.reconx.model.TradeRef;
 import com.dbtraining.reconx.model.TradeType;
@@ -18,7 +22,8 @@ import io.micrometer.core.annotation.Timed;
 
 /**
  * ============================================================================
- * TICKET-ADV033 — ReconciliationEngine using Streams (parallel matching)
+ * TICKET-ADV018 — priceQty(): exhaustive switch over the sealed TradeType hierarchy
+ * TICKET-ADV033 — ReconciliationEngine using Streams (parallel matching) + matchOne()
  * TICKET-ADV037 — CompletableFuture: parallel recon by counterparty
  * TICKET-ADV047 — Edge cases: empty/single/all-mismatched inputs handled
  * TICKET-ADV084 — @Timed exports reconciliation_duration_seconds histogram
@@ -70,19 +75,44 @@ public class ReconciliationEngine {
         throw new UnsupportedOperationException("TICKET-ADV037");
     }
 
+    /**
+     * TICKET-ADV033 — MISSING_EXTERNAL when there is no counterparty-side trade;
+     * VALUE_MISMATCH when priceQty() disagrees beyond the rule's tolerance.
+     */
     private ReconResult matchOne(TradeType internal, TradeType external, ReconciliationRule rule) {
-        // TODO(TICKET-ADV033): if external is null return ReconResult.breakResult(ref, "MISSING_EXTERNAL", ...).
-        //   Otherwise pull priceQty() for both sides, compare via rule.matches(...),
-        //   return ReconResult.matched(ref) or breakResult(ref, "VALUE_MISMATCH", details).
-        throw new UnsupportedOperationException("TICKET-ADV033");
+        String ref = internal.tradeRef().value();
+        if (external == null) {
+            return ReconResult.breakResult(ref, "MISSING_EXTERNAL",
+                    "No external trade found for ref " + ref);
+        }
+
+        BigDecimal[] internalPriceQty = priceQty(internal);
+        BigDecimal[] externalPriceQty = priceQty(external);
+
+        boolean matches = rule.matches(internalPriceQty[0], internalPriceQty[1],
+                                       externalPriceQty[0], externalPriceQty[1]);
+        if (matches) {
+            return ReconResult.matched(ref);
+        }
+        return ReconResult.breakResult(ref, "VALUE_MISMATCH",
+                "internal=%s/%s external=%s/%s".formatted(
+                        internalPriceQty[0], internalPriceQty[1],
+                        externalPriceQty[0], externalPriceQty[1]));
     }
 
-    /** TICKET-ADV018 — exhaustive switch over the sealed hierarchy. */
+    /**
+     * TICKET-ADV018 — exhaustive switch over the sealed hierarchy. Only EquityTrade
+     * has a literal price/quantity pair; the other asset classes are mapped onto the
+     * same [rate-like, size-like] shape so ReconciliationRule's tolerance math applies
+     * uniformly: FX -> {fxRate, notionalCcy1}, Bond -> {couponRate, faceValue},
+     * Derivative -> {strike, quantity}.
+     */
     private BigDecimal[] priceQty(TradeType t) {
-        // TODO(TICKET-ADV018): switch over the sealed TradeType hierarchy
-        //   (EquityTrade, FXTrade, BondTrade, DerivativeTrade) and return a
-        //   BigDecimal[]{price, qty}. The compiler enforces exhaustiveness —
-        //   omit a case and the build fails.
-        throw new UnsupportedOperationException("TICKET-ADV018");
+        return switch (t) {
+            case EquityTrade e     -> new BigDecimal[]{ e.price(), e.quantity() };
+            case FXTrade fx        -> new BigDecimal[]{ fx.fxRate(), fx.notionalCcy1() };
+            case BondTrade b       -> new BigDecimal[]{ b.couponRate(), b.faceValue() };
+            case DerivativeTrade d -> new BigDecimal[]{ d.strike(), d.quantity() };
+        };
     }
 }
