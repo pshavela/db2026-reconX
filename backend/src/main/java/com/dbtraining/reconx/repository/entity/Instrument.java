@@ -39,10 +39,11 @@ public class Instrument {
      * JSONB metadata: tick size, lot size, exchange code, etc.
      * On H2 (dev profile) this stores as a CLOB; on Postgres it's true JSONB
      * and is queryable via the @> operator.
-     */
+     *
     @Type(JsonBinaryType.class)
     @Column(columnDefinition = "jsonb")
     private Map<String, Object> metadata = new HashMap<>();
+    */
 
     public Instrument() {}
 
@@ -52,5 +53,6 @@ public class Instrument {
     public String getAssetClass() { return assetClass; }
     public String getCurrency() { return currency; }
     public String getIsin()     { return isin; }
-    public Map<String, Object> getMetadata() { return metadata; }
+
+    // public Map<String, Object> getMetadata() { return metadata; }
 }

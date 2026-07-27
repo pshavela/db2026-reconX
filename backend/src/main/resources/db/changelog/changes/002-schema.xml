@@ -46,7 +46,7 @@
             <column name="currency" type="VARCHAR(3)"><constraints nullable="false"/></column>
             <column name="isin" type="VARCHAR(12)"><constraints unique="true"/></column>
             <!-- TICKET-ADV051: H2 run in PostgreSQL compatibility mode, this will work. -->
-            <column name="metadata" type="JSONB"><constraints unique="false"/></column>
+            <!-- <column name="metadata" type="JSONB"><constraints unique="false"/></column> -->
         </createTable>
         <rollback>
             <dropTable tableName="instruments"/>
