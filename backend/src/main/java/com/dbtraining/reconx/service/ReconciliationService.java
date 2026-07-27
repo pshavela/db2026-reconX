@@ -4,11 +4,10 @@ import com.dbtraining.reconx.dto.ReconResult;
 import com.dbtraining.reconx.model.ReconciliationRule;
 import com.dbtraining.reconx.model.TradeType;
 import com.dbtraining.reconx.repository.ReconResultRepository;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
+// Only for Mock testing - TICKET-ADV044
 public class ReconciliationService {
 
     private final ReconciliationEngine engine;
