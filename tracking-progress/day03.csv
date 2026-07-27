@@ -5,3 +5,4 @@ TICKET-ADV035,Completed,Added VWAP computation
 TICKET-ADV036,Completed,Added PnL grouped by Instrument computation
 TICKET-ADV037,Completed,Added reconciliation computation per counterparty asynchronously
 TICKET-ADV038,Completed,Added custom `ReconSummary` collector class
+TICKET-ADV039,Completed,Added `TradeLookupService`
