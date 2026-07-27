@@ -5,3 +5,4 @@ TICKET-ADV050,Completed,`Trade` entity fixed;`JpaConfig` class not added as audi
 TICKET-ADV051,Completed,Added `metadata` JSONB field to `instruments` entity and fixed `002-schema.xml` file;H2 run in PostgreSQL compatibity mode so it works
 TICKET-ADV052,Completed,Nothing to do;Audit requires schema change and table creation
 TICKET-ADV053,Completed,Nothing to do;DTOs already present
+TICKET-ADV054,Completed,Updated `TradeMapper`
