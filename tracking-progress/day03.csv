@@ -3,3 +3,4 @@ TICKET-ADV033,Completed,Added reconciliation mechanism
 TICKET-ADV034,Completed,Added `NotionalSummary` computation
 TICKET-ADV035,Completed,Added VWAP computation
 TICKET-ADV036,Completed,Added PnL grouped by Instrument computation
+TICKET-ADV042,Completed,Missing counterparty trade returns BREAK with MISSING_EXTERNAL
