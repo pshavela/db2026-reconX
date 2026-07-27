@@ -1,7 +1,6 @@
 package com.dbtraining.reconx.service;
 
 import com.dbtraining.reconx.model.*;
-import com.dbtraining.reconx.repository.entity.Trade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
