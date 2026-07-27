@@ -7,3 +7,4 @@ TICKET-ADV052,Completed,Nothing to do;Audit requires schema change and table cre
 TICKET-ADV053,Completed,Nothing to do;DTOs already present
 TICKET-ADV054,Completed,Updated `TradeMapper`
 TICKET-ADV055,Completed,Nothing to do
+TICKET-ADV056,Completed,Added Trade specifications to avoid creating a query method for each possible combination
