@@ -3,5 +3,8 @@ TICKET-ADV033,Completed,Added reconciliation mechanism
 TICKET-ADV034,Completed,Added `NotionalSummary` computation
 TICKET-ADV035,Completed,Added VWAP computation
 TICKET-ADV036,Completed,Added PnL grouped by Instrument computation
+TICKET-ADV037,Completed,Added reconciliation computation per counterparty asynchronously
+TICKET-ADV038,Completed,Added custom `ReconSummary` collector class
+TICKET-ADV039,Completed,Added `TradeLookupService`
 TICKET-ADV044,Completed,Added Testcontainers PostgreSQL integration test setup
 TICKET-ADV045,Completed,Added insert -> reconcile -> verify integration test

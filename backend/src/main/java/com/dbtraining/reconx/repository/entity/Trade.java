@@ -2,6 +2,7 @@ package com.dbtraining.reconx.repository.entity;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.envers.Audited;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -30,9 +31,12 @@ import java.time.LocalDate;
  * ============================================================================
  */
 @Entity
-@Table(name = "trades")
+@Table(name = "trades", indexes = {
+        @Index(name = "idx_trades_trade_date", columnList = "trade_date"),
+        @Index(name = "idx_trades_status",     columnList = "status")
+})
 @EntityListeners(AuditingEntityListener.class)
-// @org.hibernate.envers.Audited                  // re-enable when envers tables are migrated
+// @Audited                  // re-enable when envers tables are migrated
 @SQLRestriction("deleted_at IS NULL")
 public class Trade {
 
