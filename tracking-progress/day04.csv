@@ -1,3 +1,4 @@
 Ticket,Status,Comment
 TICKET-ADV048,Completed,Nothing to do;project remains a single maven module
 TICKET-ADV049,Completed,Nothing to do
+TICKET-ADV050,Completed,`Trade` entity fixed;`JpaConfig` class not added as auditing already enabled in main `ReconxApplication`
