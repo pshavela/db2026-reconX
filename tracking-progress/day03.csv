@@ -6,5 +6,6 @@ TICKET-ADV036,Completed,Added PnL grouped by Instrument computation
 TICKET-ADV037,Completed,Added reconciliation computation per counterparty asynchronously
 TICKET-ADV038,Completed,Added custom `ReconSummary` collector class
 TICKET-ADV039,Completed,Added `TradeLookupService`
+TICKET-ADV044,Completed,Must change docker minimum API version for java, otherwise will get error for `ReconciliationIntegrationTest`;Command: `echo api.version=1.44 >> ~/.docker-java.properties`;Changed `before_state,after_state` in `006-audit-and-recon.xml` as `VARCHAR(MAX)` is not PostgreSQL-compatible
 TICKET-ADV046,Completed,Added JaCoCo check execution with 85% line coverage gate on service and repository packages
 TICKET-ADV047,Completed,Added edge-case tests: empty-internal returns empty; single-internal-no-external returns BREAK MISSING_EXTERNAL; all-mismatched returns all BREAKs. Fixed reconcile() guard to handle empty externals correctly. Implemented matchOne() and priceQty() stubs.
