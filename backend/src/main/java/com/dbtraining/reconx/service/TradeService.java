@@ -62,10 +62,7 @@ public class TradeService {
     }
 
     public Trade create(TradeRequest req, String actor) {
-        // TODO(TICKET-ADV064): reject duplicate tradeRef via DuplicateTradeRefException,
-        //   build a new Trade with instrument + counterparty looked up from
-        //   their repos (throw TradeNotFoundException on miss), status = "PENDING",
-        //   save, then:
+        // TODO
         //     - metrics.incrementTradeCreated() + metrics.recordTradeValue(qty*price) — TICKET-ADV083
         //     - events.publish(new TradeEvent(... TRADE_CREATED ... actor ...)) — TICKET-ADV129
 
@@ -100,7 +97,7 @@ public class TradeService {
 
     public Trade update(Long id, TradeRequest req, String actor) {
         if (id == null) {
-            throw new TradeNotFoundException("Id not specified");
+            throw new TradeNotFoundException(id);
         }
 
         Trade trade = tradeRepo.findById(id).orElse(null);
@@ -133,9 +130,17 @@ public class TradeService {
     }
 
     public Trade updateStatus(Long id, String status, String actor) {
-        // TODO(TICKET-ADV066): load, setStatus(status), save, publish TRADE_UPDATED
-        //   with the new status in the "after" slot of the event.
-        throw new UnsupportedOperationException("TICKET-ADV066");
+        Trade trade = null;
+
+        if (id == null || (trade = tradeRepo.findById(id).orElse(null)) == null) {
+            throw new TradeNotFoundException(id);
+        }
+
+        trade.setStatus(status);
+
+        // TODO publish TRADE_UPDATED with the new status in the "after" slot of the event.
+
+        return tradeRepo.save(trade);
     }
 
     public void softDelete(Long id, String actor) {

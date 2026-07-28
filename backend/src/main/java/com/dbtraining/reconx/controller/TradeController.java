@@ -4,6 +4,7 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.util.Map;
 
+import com.dbtraining.reconx.dto.*;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -20,10 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.dbtraining.reconx.dto.PagedResponse;
-import com.dbtraining.reconx.dto.TradeMapper;
-import com.dbtraining.reconx.dto.TradeRequest;
-import com.dbtraining.reconx.dto.TradeResponse;
 import com.dbtraining.reconx.repository.entity.Trade;
 import com.dbtraining.reconx.service.TradeService;
 
@@ -94,11 +91,11 @@ public class TradeController {
     @PatchMapping("/{id}/status")
     @Operation(summary = "Update only the status field")
     public TradeResponse updateStatus(@PathVariable Long id,
-                                      @RequestBody Map<String, String> body,
+                                      @Valid @RequestBody StatusUpdate statusUpdate,
                                       @AuthenticationPrincipal Object principal) {
-        // TODO(TICKET-ADV066): read body.get("status") and call
-        //   service.updateStatus(id, status, actor). Return mapper.toResponse(saved).
-        throw new UnsupportedOperationException("TICKET-ADV066");
+        String actor = String.valueOf(principal);
+
+        return mapper.toResponse(service.updateStatus(id, statusUpdate.status(), actor));
     }
 
     @DeleteMapping("/{id}")
