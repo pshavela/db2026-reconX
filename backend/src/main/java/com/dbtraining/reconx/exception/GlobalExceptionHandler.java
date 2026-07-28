@@ -27,6 +27,24 @@ public class GlobalExceptionHandler {
         return pd;
     }
 
+    @ExceptionHandler(InstrumentNotFoundException.class)
+    public ProblemDetail notFound(InstrumentNotFoundException ex) {
+        ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+        pd.setType(URI.create("https://reconx.dbtraining.com/errors/instrument-not-found"));
+        pd.setTitle("Instrument not found");
+        pd.setProperty("timestamp", Instant.now());
+        return pd;
+    }
+
+    @ExceptionHandler(CounterpartyNotFoundException.class)
+    public ProblemDetail notFound(CounterpartyNotFoundException ex) {
+        ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+        pd.setType(URI.create("https://reconx.dbtraining.com/errors/counterparty-not-found"));
+        pd.setTitle("Counterparty not found");
+        pd.setProperty("timestamp", Instant.now());
+        return pd;
+    }
+
     @ExceptionHandler(DuplicateTradeRefException.class)
     public ProblemDetail duplicate(DuplicateTradeRefException ex) {
         ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());

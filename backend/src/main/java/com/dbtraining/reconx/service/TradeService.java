@@ -1,7 +1,9 @@
 package com.dbtraining.reconx.service;
 
 import com.dbtraining.reconx.dto.TradeRequest;
+import com.dbtraining.reconx.exception.CounterpartyNotFoundException;
 import com.dbtraining.reconx.exception.DuplicateTradeRefException;
+import com.dbtraining.reconx.exception.InstrumentNotFoundException;
 import com.dbtraining.reconx.exception.TradeNotFoundException;
 import com.dbtraining.reconx.kafka.TradeEventProducer;
 import com.dbtraining.reconx.observability.TradeMetrics;
@@ -74,8 +76,12 @@ public class TradeService {
         Instrument instrument = instRepo.findById(req.instrumentId()).orElse(null);
         Counterparty counterparty = cpRepo.findById(req.counterpartyId()).orElse(null);
 
-        if (instrument == null || counterparty == null) {
-            throw new TradeNotFoundException(req.tradeRef());
+        if (instrument == null) {
+            throw new InstrumentNotFoundException(req.instrumentId());
+        }
+
+        if (counterparty == null) {
+            throw new CounterpartyNotFoundException(req.counterpartyId());
         }
 
         Trade trade = new Trade.Builder()
@@ -93,9 +99,37 @@ public class TradeService {
     }
 
     public Trade update(Long id, TradeRequest req, String actor) {
-        // TODO(TICKET-ADV065): load by id (throw TradeNotFoundException if missing),
-        //   copy mutable fields from req, save, publish a TRADE_UPDATED event.
-        throw new UnsupportedOperationException("TICKET-ADV065");
+        if (id == null) {
+            throw new TradeNotFoundException("Id not specified");
+        }
+
+        Trade trade = tradeRepo.findById(id).orElse(null);
+        Instrument instrument = instRepo.findById(req.instrumentId()).orElse(null);
+        Counterparty counterparty = cpRepo.findById(req.counterpartyId()).orElse(null);
+
+        if (trade == null) {
+            throw new TradeNotFoundException(req.tradeRef());
+        }
+
+        if (instrument == null) {
+            throw new InstrumentNotFoundException(req.instrumentId());
+        }
+
+        if (counterparty == null) {
+            throw new CounterpartyNotFoundException(req.counterpartyId());
+        }
+
+        trade.setInstrument(instrument);
+        trade.setCounterparty(counterparty);
+        trade.setPrice(req.price());
+        trade.setQuantity(req.quantity());
+        trade.setSide(req.side());
+        trade.setAssetClass(req.assetClass());
+        trade.setTradeDate(req.tradeDate());
+
+        // TODO publish a TRADE_UPDATED event.
+
+        return tradeRepo.save(trade);
     }
 
     public Trade updateStatus(Long id, String status, String actor) {
