@@ -22,7 +22,7 @@ class EquityTradeTest {
     @Test
     void builder_missingPrice_throws() {
         Builder b = EquityTrade.builder()
-                .tradeRef(TradeRef.of("AAA-20260101-0001"))
+                .tradeRef(TradeRef.of("AAA-20260101-0002"))
                 .instrumentSymbol("SAP.DE")
                 .quantity(new BigDecimal("100"))
                 //.price(new BigDecimal("100"))
@@ -37,9 +37,42 @@ class EquityTradeTest {
 
     @Test
     void equality_byTradeRef() {
-        // TODO(TICKET-ADV028): two EquityTrades with the same tradeRef are equal and share hashCode;
-        //                     a third with a different tradeRef is not equal.
-        org.junit.jupiter.api.Assertions.fail("TICKET-ADV028 not implemented yet");
+        EquityTrade a = EquityTrade.builder()
+                .tradeRef(TradeRef.of("AAA-20260101-0001"))
+                .instrumentSymbol("SAP.DE")
+                .quantity(new BigDecimal("100"))
+                .currency("EUR").side(Side.BUY)
+                .price(new BigDecimal("105"))
+                .tradeDate(LocalDate.of(2026, 6, 3))
+                .counterpartyId(1L)
+                .build();
+
+        EquityTrade b = EquityTrade.builder()
+                .tradeRef(TradeRef.of("AAA-20260101-0001"))
+                .instrumentSymbol("APPLE.US")
+                .quantity(new BigDecimal("50"))
+                .currency("EUR").side(Side.BUY)
+                .price(new BigDecimal("500"))
+                .tradeDate(LocalDate.of(2026, 5, 3))
+                .counterpartyId(3L)
+                .build();
+
+
+        EquityTrade c = EquityTrade.builder()
+                .tradeRef(TradeRef.of("CCC-20260101-0001"))
+                .instrumentSymbol("APPLE.US")
+                .quantity(new BigDecimal("50"))
+                .currency("EUR").side(Side.BUY)
+                .price(new BigDecimal("500"))
+                .tradeDate(LocalDate.of(2026, 5, 3))
+                .counterpartyId(3L)
+                .build();
+
+        assertThat(a.hashCode()).isEqualTo(b.hashCode());
+        assertThat(a.hashCode()).isEqualTo(b.hashCode());
+
+        assertThat(b).isNotEqualTo(c);
+        assertThat(b.hashCode()).isNotEqualTo(c.hashCode());
     }
 
     private EquityTrade sampleEquity(String ref) {
