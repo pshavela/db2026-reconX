@@ -45,11 +45,6 @@
   --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
-/* -- TICKET-ADV102: Reduced motion ---------------------------------------- */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation: none !important; transition: none !important; }
-}
-
 /* -- Reset ---------------------------------------------------------------- */
 * { box-sizing: border-box; }
 
@@ -133,6 +128,22 @@ body {
 
 /* -- TICKET-ADV102: Keyframe animations ----------------------------------- */
 @keyframes slide-in { from { transform: translateX(-10%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes fade-in  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4); }
+  50%      { transform: scale(1.02); box-shadow: 0 0 0 8px rgba(220, 53, 69, 0); }
+}
+.trade-card--new { animation: slide-in 0.4s ease-out, fade-in 0.4s ease-out; }
+.alert--danger {
+  background: var(--color-surface);
+  border: 1px solid var(--color-danger);
+  border-left: 4px solid var(--color-danger);
+  border-radius: var(--radius);
+  padding: var(--space-2) var(--space-3);
+  margin-bottom: var(--space-3);
+  font-size: var(--font-size-sm);
+  animation: pulse 2s ease-in-out infinite;
+}
 
 /* -- TICKET-ADV103: Responsive breakpoints -------------------------------- */
 @media (max-width: 1024px) {
@@ -148,3 +159,8 @@ body {
 /* -- Shared controls ------------------------------------------------------ */
 button { padding: var(--space-1) var(--space-2); border: 1px solid var(--color-border); background: transparent; color: inherit; border-radius: var(--radius); cursor: pointer; }
 :focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; }
+
+/* -- TICKET-ADV102: Reduced motion (must be last to override all above) --- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
