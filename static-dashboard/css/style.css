@@ -20,16 +20,29 @@
   --color-text:    #1a1a1a;
   --color-surface: #f5f5f5;
   --color-border:  #d4d4d4;
+  --color-text-muted: #6b6b6b;
+  --color-white: #ffffff;
   --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
-  --radius:  4px;
+  --space-5: 20px; --space-6: 32px;
+  --radius:    4px;
+  --radius-lg: 8px;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.1);
+  --font-size-sm: 13px;
+  --font-size-md: 16px;
+  --font-size-lg: 22px;
+  --font-size-title: 18px;
 }
 
 /* -- TICKET-ADV100: Dark theme overrides ---------------------------------- */
 [data-theme="dark"] {
-  --color-bg:      #1a1a1a;
-  --color-text:    #f5f5f5;
-  --color-surface: #2a2a2a;
-  --color-border:  #3a3a3a;
+  --color-bg:         #1a1a1a;
+  --color-text:       #f5f5f5;
+  --color-text-muted: #a0a0a0;
+  --color-surface:    #2a2a2a;
+  --color-border:     #3a3a3a;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 /* -- TICKET-ADV102: Reduced motion ---------------------------------------- */
@@ -58,11 +71,11 @@ body {
   gap: var(--space-4);
   padding: 0 var(--space-4);
   background: var(--color-primary);
-  color: #fff;
+  color: var(--color-white);
 }
-.layout__title { margin: 0; font-size: 18px; }
+.layout__title { margin: 0; font-size: var(--font-size-title); }
 .layout__nav   { display: flex; gap: var(--space-3); margin-left: auto; }
-.layout__nav a { color: #fff; text-decoration: none; }
+.layout__nav a { color: var(--color-white); text-decoration: none; }
 .layout__nav a[aria-current="page"] { border-bottom: 2px solid var(--color-gold); }
 
 .layout__body {
@@ -108,8 +121,8 @@ body {
   padding: var(--space-3);
 }
 .stat-card--warn { border-color: var(--color-warning); }
-.stat-card h3    { margin: 0; font-size: 13px; opacity: 0.7; }
-.stat-card p     { margin: var(--space-2) 0 0; font-size: 22px; font-weight: 700; }
+.stat-card h3    { margin: 0; font-size: var(--font-size-sm); color: var(--color-text-muted); }
+.stat-card p     { margin: var(--space-2) 0 0; font-size: var(--font-size-lg); font-weight: 700; }
 
 /* -- TICKET-ADV101: Live trade feed --------------------------------------- */
 #trade-feed { display: flex; flex-direction: column; gap: var(--space-2); margin-top: var(--space-3); max-height: 50vh; overflow-y: auto; }

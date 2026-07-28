@@ -1,6 +1,6 @@
 Ticket,Status,Comment
 TICKET-ADV098,Completed,Flexbox page shell with nested containers;semantic HTML5 landmarks with ARIA roles;stat cards use flex-wrap not CSS Grid
-TICKET-ADV099,Not Started,CSS custom properties (design tokens)
+TICKET-ADV099,Completed,Design tokens on :root;all hardcoded hex/px replaced with var();dark-mode overrides for new tokens
 TICKET-ADV100,Not Started,Dark/light theme toggle with localStorage + zero-FOUC
 TICKET-ADV101,Not Started,Trade feed area with slide-in animation
 TICKET-ADV102,Not Started,CSS animations (fade-in slide-in pulse) + prefers-reduced-motion
