@@ -1,5 +1,6 @@
 package com.dbtraining.reconx.controller;
 
+import com.dbtraining.reconx.dto.PagedResponse;
 import com.dbtraining.reconx.dto.ReconJobResponse;
 import com.dbtraining.reconx.dto.ReconRunRequest;
 import com.dbtraining.reconx.exception.TradeNotFoundException;
@@ -11,6 +12,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,11 +53,16 @@ public class ReconController {
 
     @GetMapping("/jobs/{jobId}/results")
     @Operation(summary = "Get results for a recon job")
-    public List<ReconBreak> results(@PathVariable String jobId) {
+    public PagedResponse<ReconBreak> results(
+            @PathVariable String jobId,
+            @PageableDefault(size = 50) Pageable pageable
+    ) {
         // TODO(TICKET-ADV069): once recon_jobs + recon_breaks tables are wired,
         //   return breaks.findByJobId(jobId). Day-0 returns an empty list so
         //   the React breaks-table renders "no breaks" gracefully.
-        return Collections.emptyList();
+
+        // for now we just return all breaks in a paginated way
+        return PagedResponse.from(breaks.findAll(pageable), it-> it);
     }
 
     @PutMapping("/results/{id}/resolve")
