@@ -159,6 +159,23 @@ live in HttpOnly cookies for 7 days.
 
 ---
 
+## API versioning (TICKET-ADV080)
+
+Every controller's `@RequestMapping` carries a `/v1/...` prefix, combined
+with the `/api` servlet context-path to yield `/api/v1/...`. The rule:
+breaking changes get a new version segment (`/api/v2/...`); the old segment
+keeps working until its documented sunset date instead of disappearing
+outright. `GET /api/v0/trades` is a worked example of a retired endpoint —
+it returns `410 Gone` with `Deprecation`, `Sunset`, and `Link` headers
+pointing callers at the successor.
+
+`POST /api/auth/login` is intentionally left unversioned for now — adding
+`/v1` there is a one-line change but touches the same file as the
+in-progress JWT/RBAC work (TICKET-ADV072-074), so it's deferred to avoid a
+merge conflict.
+
+---
+
 ## Deploy to the demo laptop (Day 10)
 
 The deploy story is **GitHub Actions builds + pushes Docker images to GHCR;
