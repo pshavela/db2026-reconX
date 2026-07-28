@@ -4,7 +4,7 @@ TICKET-ADV099,Completed,Design tokens on :root;all hardcoded hex/px replaced wit
 TICKET-ADV100,Completed,Theme toggle with localStorage persistence;aria-pressed;zero-FOUC via inline IIFE in head
 TICKET-ADV101,Completed,Trade feed flex column with slide-in animation;three status modifiers (matched/break/pending)
 TICKET-ADV102,Completed,Three keyframes (slide-in/fade-in/pulse);alert--danger banner;prefers-reduced-motion override
-TICKET-ADV103,Not Started,Responsive breakpoints (desktop/tablet/mobile)
+TICKET-ADV103,Completed,Responsive breakpoints (desktop/tablet/mobile);sidebar as horizontal strip on tablet;hidden on mobile
 TICKET-ADV104,Not Started,EventSource SSE subscription
 TICKET-ADV105,Not Started,Prepend-and-animate with 50-entry DOM cap
 TICKET-ADV106,Not Started,Sortable/resizable/frozen-header data table
