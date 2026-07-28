@@ -1,9 +1,12 @@
 package com.dbtraining.reconx.controller;
 
+import com.dbtraining.reconx.dto.ReconJobResponse;
 import com.dbtraining.reconx.dto.ReconRunRequest;
 import com.dbtraining.reconx.exception.TradeNotFoundException;
 import com.dbtraining.reconx.repository.ReconBreakRepository;
+import com.dbtraining.reconx.repository.ReconJobRepository;
 import com.dbtraining.reconx.repository.entity.ReconBreak;
+import com.dbtraining.reconx.service.ReconJobService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -29,16 +32,19 @@ import java.util.UUID;
 public class ReconController {
 
     private final ReconBreakRepository breaks;
+    private final ReconJobService jobService;
 
-    public ReconController(ReconBreakRepository breaks) { this.breaks = breaks; }
+    public ReconController(ReconBreakRepository breaks, ReconJobService jobService) {
+        this.breaks = breaks;
+        this.jobService = jobService;
+    }
 
     @PostMapping("/run")
     @Operation(summary = "Trigger a reconciliation job (async)")
-    public ResponseEntity<Map<String, String>> runRecon(@Valid @RequestBody ReconRunRequest req) {
-        // TODO(TICKET-ADV068): generate a jobId, write a row to recon_jobs, and
-        //   return 202 Accepted with {"jobId": ..., "status": "QUEUED"}. A
-        //   worker (Day 6 / Kafka consumer) picks the job up asynchronously.
-        throw new UnsupportedOperationException("TICKET-ADV068");
+    public ResponseEntity<ReconJobResponse> runRecon(@Valid @RequestBody ReconRunRequest req) {
+        ReconJobResponse reconJobResponse = jobService.create(req);
+
+        return ResponseEntity.accepted().body(reconJobResponse);
     }
 
     @GetMapping("/jobs/{jobId}/results")
