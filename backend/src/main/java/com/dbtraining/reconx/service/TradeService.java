@@ -144,9 +144,15 @@ public class TradeService {
     }
 
     public void softDelete(Long id, String actor) {
-        // TODO(TICKET-ADV067): load, call t.softDelete() (sets deleted_at), save,
-        //   publish a TRADE_CANCELLED event.
-        throw new UnsupportedOperationException("TICKET-ADV067");
+        Trade trade = null;
+
+        if (id == null || (trade = tradeRepo.findById(id).orElse(null)) == null) {
+            throw new TradeNotFoundException(id);
+        }
+
+        trade.softDelete();
+
+        // TODO publish a TRADE_CANCELLED event.
     }
 
     @Transactional(readOnly = true)
