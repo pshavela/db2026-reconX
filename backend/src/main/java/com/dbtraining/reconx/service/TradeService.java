@@ -1,7 +1,9 @@
 package com.dbtraining.reconx.service;
 
 import com.dbtraining.reconx.dto.TradeRequest;
+import com.dbtraining.reconx.exception.CounterpartyNotFoundException;
 import com.dbtraining.reconx.exception.DuplicateTradeRefException;
+import com.dbtraining.reconx.exception.InstrumentNotFoundException;
 import com.dbtraining.reconx.exception.TradeNotFoundException;
 import com.dbtraining.reconx.kafka.TradeEventProducer;
 import com.dbtraining.reconx.observability.TradeMetrics;
@@ -60,10 +62,7 @@ public class TradeService {
     }
 
     public Trade create(TradeRequest req, String actor) {
-        // TODO(TICKET-ADV064): reject duplicate tradeRef via DuplicateTradeRefException,
-        //   build a new Trade with instrument + counterparty looked up from
-        //   their repos (throw TradeNotFoundException on miss), status = "PENDING",
-        //   save, then:
+        // TODO
         //     - metrics.incrementTradeCreated() + metrics.recordTradeValue(qty*price) — TICKET-ADV083
         //     - events.publish(new TradeEvent(... TRADE_CREATED ... actor ...)) — TICKET-ADV129
 
@@ -74,8 +73,12 @@ public class TradeService {
         Instrument instrument = instRepo.findById(req.instrumentId()).orElse(null);
         Counterparty counterparty = cpRepo.findById(req.counterpartyId()).orElse(null);
 
-        if (instrument == null || counterparty == null) {
-            throw new TradeNotFoundException(req.tradeRef());
+        if (instrument == null) {
+            throw new InstrumentNotFoundException(req.instrumentId());
+        }
+
+        if (counterparty == null) {
+            throw new CounterpartyNotFoundException(req.counterpartyId());
         }
 
         Trade trade = new Trade.Builder()
@@ -93,21 +96,63 @@ public class TradeService {
     }
 
     public Trade update(Long id, TradeRequest req, String actor) {
-        // TODO(TICKET-ADV065): load by id (throw TradeNotFoundException if missing),
-        //   copy mutable fields from req, save, publish a TRADE_UPDATED event.
-        throw new UnsupportedOperationException("TICKET-ADV065");
+        if (id == null) {
+            throw new TradeNotFoundException(id);
+        }
+
+        Trade trade = tradeRepo.findById(id).orElse(null);
+        Instrument instrument = instRepo.findById(req.instrumentId()).orElse(null);
+        Counterparty counterparty = cpRepo.findById(req.counterpartyId()).orElse(null);
+
+        if (trade == null) {
+            throw new TradeNotFoundException(req.tradeRef());
+        }
+
+        if (instrument == null) {
+            throw new InstrumentNotFoundException(req.instrumentId());
+        }
+
+        if (counterparty == null) {
+            throw new CounterpartyNotFoundException(req.counterpartyId());
+        }
+
+        trade.setInstrument(instrument);
+        trade.setCounterparty(counterparty);
+        trade.setPrice(req.price());
+        trade.setQuantity(req.quantity());
+        trade.setSide(req.side());
+        trade.setAssetClass(req.assetClass());
+        trade.setTradeDate(req.tradeDate());
+
+        // TODO publish a TRADE_UPDATED event.
+
+        return tradeRepo.save(trade);
     }
 
     public Trade updateStatus(Long id, String status, String actor) {
-        // TODO(TICKET-ADV066): load, setStatus(status), save, publish TRADE_UPDATED
-        //   with the new status in the "after" slot of the event.
-        throw new UnsupportedOperationException("TICKET-ADV066");
+        Trade trade = null;
+
+        if (id == null || (trade = tradeRepo.findById(id).orElse(null)) == null) {
+            throw new TradeNotFoundException(id);
+        }
+
+        trade.setStatus(status);
+
+        // TODO publish TRADE_UPDATED with the new status in the "after" slot of the event.
+
+        return tradeRepo.save(trade);
     }
 
     public void softDelete(Long id, String actor) {
-        // TODO(TICKET-ADV067): load, call t.softDelete() (sets deleted_at), save,
-        //   publish a TRADE_CANCELLED event.
-        throw new UnsupportedOperationException("TICKET-ADV067");
+        Trade trade = null;
+
+        if (id == null || (trade = tradeRepo.findById(id).orElse(null)) == null) {
+            throw new TradeNotFoundException(id);
+        }
+
+        trade.softDelete();
+
+        // TODO publish a TRADE_CANCELLED event.
     }
 
     @Transactional(readOnly = true)
