@@ -2,7 +2,7 @@ Ticket,Status,Comment
 TICKET-ADV098,Completed,Flexbox page shell with nested containers;semantic HTML5 landmarks with ARIA roles;stat cards use flex-wrap not CSS Grid
 TICKET-ADV099,Completed,Design tokens on :root;all hardcoded hex/px replaced with var();dark-mode overrides for new tokens
 TICKET-ADV100,Completed,Theme toggle with localStorage persistence;aria-pressed;zero-FOUC via inline IIFE in head
-TICKET-ADV101,Not Started,Trade feed area with slide-in animation
+TICKET-ADV101,Completed,Trade feed flex column with slide-in animation;three status modifiers (matched/break/pending)
 TICKET-ADV102,Not Started,CSS animations (fade-in slide-in pulse) + prefers-reduced-motion
 TICKET-ADV103,Not Started,Responsive breakpoints (desktop/tablet/mobile)
 TICKET-ADV104,Not Started,EventSource SSE subscription

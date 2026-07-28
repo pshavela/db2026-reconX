@@ -129,6 +129,7 @@ body {
 .trade-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius); padding: var(--space-2) var(--space-3); animation: slide-in 0.3s ease-out; }
 .trade-card--matched { border-left: 4px solid var(--color-success); }
 .trade-card--break   { border-left: 4px solid var(--color-danger); }
+.trade-card--pending { border-left: 4px solid var(--color-warning); }
 
 /* -- TICKET-ADV102: Keyframe animations ----------------------------------- */
 @keyframes slide-in { from { transform: translateX(-10%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
