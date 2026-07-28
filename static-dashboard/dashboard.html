@@ -1,9 +1,9 @@
 <!doctype html>
 <!--
 ============================================================================
-TICKET-ADV098 — CSS Grid page shell (sidebar + header + main + footer)
-TICKET-ADV099 — Semantic HTML5 (header/nav/main/section/article/aside/footer)
-TICKET-ADV100 — ARIA roles + aria-live for the trade feed
+TICKET-ADV098 — Flexbox page shell (sidebar + header + 3-col main + footer)
+             — Semantic HTML5 (header/nav/main/section/article/aside/footer)
+             — ARIA roles + aria-live for the trade feed
 ============================================================================
 -->
 <html lang="en" data-theme="light">
@@ -11,6 +11,13 @@ TICKET-ADV100 — ARIA roles + aria-live for the trade feed
   <meta charset="utf-8" />
   <title>ReconX (static) — Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- TICKET-ADV100: inline IIFE before stylesheet to prevent FOUC -->
+  <script>
+    (function () {
+      var t = localStorage.getItem('reconx-theme') || 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
@@ -24,32 +31,33 @@ TICKET-ADV100 — ARIA roles + aria-live for the trade feed
     <button id="theme-toggle" aria-label="Toggle light/dark theme">🌗</button>
   </header>
 
-  <aside class="layout__sidebar" role="complementary">
-    <h2>Quick filters</h2>
-    <ul>
-      <li><a href="#">All trades</a></li>
-      <li><a href="#">Open breaks</a></li>
-      <li><a href="#">Today</a></li>
-    </ul>
-  </aside>
+  <div class="layout__body">
+    <aside class="layout__sidebar" role="complementary">
+      <h2>Quick filters</h2>
+      <ul>
+        <li><a href="#">All trades</a></li>
+        <li><a href="#">Open breaks</a></li>
+        <li><a href="#">Today</a></li>
+      </ul>
+    </aside>
 
-  <main class="layout__main" role="main">
-    <section aria-labelledby="kpi">
-      <h2 id="kpi">Today at a glance</h2>
-      <div class="stat-grid">
-        <article class="stat-card"><h3>Trades</h3><p>120</p></article>
-        <article class="stat-card"><h3>Matched</h3><p>105</p></article>
-        <article class="stat-card stat-card--warn"><h3>Open breaks</h3><p>15</p></article>
-        <article class="stat-card"><h3>Notional</h3><p>$24.3M</p></article>
-      </div>
-    </section>
+    <main class="layout__main" role="main">
+      <section aria-labelledby="kpi">
+        <h2 id="kpi">Today at a glance</h2>
+        <div class="stat-grid">
+          <article class="stat-card"><h3>Trades</h3><p>120</p></article>
+          <article class="stat-card"><h3>Matched</h3><p>105</p></article>
+          <article class="stat-card stat-card--warn"><h3>Open breaks</h3><p>15</p></article>
+          <article class="stat-card"><h3>Notional</h3><p>$24.3M</p></article>
+        </div>
+      </section>
 
-    <section aria-labelledby="feed">
-      <h2 id="feed">Live trade feed</h2>
-      <!-- TICKET-ADV100 aria-live so screen readers announce new trades -->
-      <div id="trade-feed" role="status" aria-live="polite" aria-atomic="false"></div>
-    </section>
-  </main>
+      <section aria-labelledby="feed">
+        <h2 id="feed">Live trade feed</h2>
+        <div id="trade-feed" role="status" aria-live="polite" aria-atomic="false"></div>
+      </section>
+    </main>
+  </div>
 
   <footer class="layout__footer" role="contentinfo">
     <small>ReconX TDI 2026 · static dashboard (Day 7)</small>
