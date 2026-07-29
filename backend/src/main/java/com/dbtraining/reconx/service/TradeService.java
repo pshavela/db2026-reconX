@@ -89,7 +89,14 @@ public class TradeService {
                 .tradeDate(req.tradeDate())
                 .build();
 
-        return tradeRepo.save(trade);
+        // Save the trade to the database first
+        Trade saved = tradeRepo.save(trade);
+
+        // --- TICKET-ADV083 ---
+        // Increment the metric ONLY after a successful save
+        metrics.incrementTradeCreated();
+
+        return saved;
     }
 
     public Trade update(Long id, TradeRequest req, String actor) {
