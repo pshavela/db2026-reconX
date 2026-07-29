@@ -3,6 +3,7 @@ import React, { Suspense, lazy } from 'react';
 import { Routes, Route, Link, Navigate } from 'react-router-dom';
 import { withErrorBoundary } from '@components/withErrorBoundary.jsx';
 import { PageSkeleton } from '@components/PageSkeleton.jsx';
+import { useTheme } from '@context/ThemeContext.jsx';
 
 const Dashboard = lazy(() => import('@pages/Dashboard.jsx'));
 const Trades    = lazy(() => import('@pages/Trades.jsx'));
@@ -10,6 +11,7 @@ const AddTrade  = lazy(() => import('@pages/AddTrade.jsx'));
 const Login     = lazy(() => import('@pages/Login.jsx'));
 
 function App() {
+  const { theme, toggle } = useTheme();
   return (
     <div className="layout">
       <header className="layout__header">
@@ -18,6 +20,9 @@ function App() {
           <Link to="/">Dashboard</Link>
           <Link to="/trades">Trades</Link>
           <Link to="/trades/new">Add trade</Link>
+          <button type="button" onClick={toggle} aria-label="Toggle theme">
+            {theme === 'dark' ? '☀️ Light' : '🌙 Dark'}
+          </button>
         </nav>
       </header>
       <main className="layout__main">
