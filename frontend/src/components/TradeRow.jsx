@@ -3,16 +3,18 @@
 import React from 'react';
 
 function TradeRowImpl({ trade, onClick }) {
+  // `display: contents` keeps this wrapper out of the grid layout — DataTable's
+  // .data-table__row is `display: grid` over 5 direct children, and a real
+  // wrapping element here would break that column alignment (and <tr>/<td>
+  // would be invalid HTML outside an actual <table>, which DataTable isn't).
   return (
-    <tr onClick={() => onClick(trade.id)}>
-      <td>{trade.tradeRef}</td>
-      <td>{trade.instrumentSymbol}</td>
-      <td>{trade.quantity}</td>
-      <td>{trade.price}</td>
-      <td>
-        <span className={`status-pill ${trade.status.toLowerCase()}`}>{trade.status}</span>
-      </td>
-    </tr>
+    <span onClick={() => onClick(trade.id)} style={{ display: 'contents' }}>
+      <span>{trade.tradeRef}</span>
+      <span>{trade.instrumentSymbol}</span>
+      <span>{trade.quantity}</span>
+      <span>{trade.price}</span>
+      <span className={`status-pill ${trade.status.toLowerCase()}`}>{trade.status}</span>
+    </span>
   );
 }
 

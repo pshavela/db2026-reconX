@@ -1,8 +1,9 @@
 // TICKET-ADV114 — Compound DataTable.
 // TICKET-ADV117 — useDebouncedSearch.
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { withAuth } from '@components/withAuth.jsx';
 import DataTable from '@components/DataTable.jsx';
+import { TradeRow } from '@components/TradeRow.jsx';
 import { useDebouncedSearch } from '@hooks/useDebouncedSearch.js';
 import { api } from '@services/apiService.js';
 
@@ -11,6 +12,11 @@ function Trades() {
   const debounced = useDebouncedSearch(search, 300);
   const [page, setPage] = useState(0);
   const [data, setData] = useState({ items: [], totalPages: 0 });
+  const [selectedId, setSelectedId] = useState(null);
+
+  // Reference-stable across renders — onClick prop on <TradeRow> won't change,
+  // so ADV119's React.memo equality check on it actually holds.
+  const handleSelect = useCallback((id) => setSelectedId(id), []);
 
   useEffect(() => {
     let cancelled = false;
@@ -43,15 +49,7 @@ function Trades() {
         ]} />
         <DataTable.Body
           rows={data.items}
-          render={(t) => (
-            <>
-              <span>{t.tradeRef}</span>
-              <span>{t.instrumentSymbol}</span>
-              <span>{t.quantity}</span>
-              <span>{t.price}</span>
-              <span>{t.status}</span>
-            </>
-          )}
+          render={(t) => <TradeRow trade={t} onClick={handleSelect} />}
         />
         <DataTable.Pagination
           page={page}
@@ -59,6 +57,7 @@ function Trades() {
           onChange={setPage}
         />
       </DataTable>
+      {selectedId != null && <p>Selected trade id: {selectedId}</p>}
     </section>
   );
 }
