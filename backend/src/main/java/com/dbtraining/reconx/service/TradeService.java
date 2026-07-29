@@ -95,6 +95,8 @@ public class TradeService {
         // --- TICKET-ADV083 ---
         // Increment the metric ONLY after a successful save
         metrics.incrementTradeCreated();
+        metrics.recordTradeValue(saved.getQuantity().multiply(saved.getPrice()).doubleValue());
+
 
         return saved;
     }
