@@ -1,0 +1,6 @@
+# Force LF for Unix shell scripts regardless of the checkout OS — Windows'
+# default core.autocrlf=true converts these to CRLF, which breaks `./mvnw`
+# inside Linux Docker builds (shebang becomes "#!/bin/sh\r", exit 127).
+*.sh   text eol=lf
+mvnw   text eol=lf
+mvnw.cmd text eol=crlf
