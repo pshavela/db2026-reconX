@@ -29,15 +29,6 @@ public class TradeStreamBroadcaster {
         emitter.onCompletion(() -> emitters.remove(emitter));
         emitter.onTimeout(() -> emitters.remove(emitter));
         emitter.onError(ex -> emitters.remove(emitter));
-        try {
-            // Without this, the HTTP response isn't committed until the first
-            // real trade is broadcast — the browser's EventSource never fires
-            // onopen, so the UI shows "disconnected" forever if nothing is
-            // being created. A no-op comment forces headers out immediately.
-            emitter.send(SseEmitter.event().comment("connected"));
-        } catch (IOException ex) {
-            emitters.remove(emitter);
-        }
         return emitter;
     }
 
