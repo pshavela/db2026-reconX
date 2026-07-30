@@ -1,7 +1,12 @@
 # Ticket ADV096
 
 Assignee: alexandraelenadumitrescu
-Status: Completed (with a documented scope limitation)
+Status: Partial — clearCache() is fully functional; priceTolerance/cachingEnabled
+are NOT wired into ReconciliationEngine, so the ticket's core acceptance
+criterion ("editing PriceTolerance from JConsole changes the value the recon
+engine reads on the next run") is not met. See "Scope limitation" below —
+this is a known gap, not an oversight, but it does not satisfy the ticket
+as written.
 
 ## Problem
 - No way for an operator to tune the reconciliation price tolerance or clear
