@@ -19,9 +19,11 @@ import java.time.LocalDate;
  *
  * WHAT:    Persistent representation of a trade. Maps to the trades table
  *          declared in 002-schema.xml.
- * HOW:     ManyToOne LAZY to Counterparty and Instrument keeps the row
- *          fetch tight; the service layer asks for the relation only when
- *          it needs it.
+ * HOW:     ManyToOne EAGER to Counterparty and Instrument — with
+ *          spring.jpa.open-in-view=false, a LAZY relation throws
+ *          LazyInitializationException the moment the response is
+ *          serialised outside the transaction, so both are fetched
+ *          up front instead.
  * WHY:     This is the durable record. The domain {@code TradeType} sealed
  *          hierarchy is the in-memory shape used by reconciliation; this
  *          entity is the on-disk shape used by JPA. The mapper between the
@@ -47,11 +49,13 @@ public class Trade {
     @Column(name = "trade_ref", nullable = false, unique = true, length = 30)
     private String tradeRef;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    // EAGER: avoids LazyInitializationException when the session closes before
+    // instrument/counterparty are read (e.g. serialising the list response).
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "instrument_id")
     private Instrument instrument;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "counterparty_id")
     private Counterparty counterparty;
 
