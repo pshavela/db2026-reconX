@@ -24,6 +24,8 @@ async function request(method, path, body) {
 }
 
 export const api = {
+  // See Login.jsx — labeled ADV072 in the scaffold, but that ticket never
+  // actually required this frontend call.
   login: (email, password)   => request('POST', '/auth/login', { email, password }),
   listTrades: (params = '')  => request('GET', `/v1/trades${params}`),
   createTrade: (req)         => request('POST', '/v1/trades', req),

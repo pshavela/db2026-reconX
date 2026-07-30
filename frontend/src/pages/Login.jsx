@@ -1,4 +1,6 @@
-// TICKET-ADV072 — Login page exchanging email/password for a JWT.
+// Labeled TICKET-ADV072 in this scaffold, but that ticket (student-guides/day5)
+// only covers the backend JWT endpoint — it never actually required this
+// frontend submit logic. Implemented anyway since the page was otherwise dead.
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@context/AuthContext.jsx';
