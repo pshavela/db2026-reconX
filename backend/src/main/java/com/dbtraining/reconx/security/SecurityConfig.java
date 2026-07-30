@@ -86,11 +86,6 @@ public class SecurityConfig {
                         "/v3/api-docs/**",
                         "/h2/**"
                 ).permitAll()
-                // Temporary: the browser's native EventSource API can't attach an
-                // Authorization header, so this SSE bridge (not a real ticket —
-                // see TradeStreamBroadcaster) has to stay open. Replace once the
-                // real Kafka-backed feed (ADV128/ADV129) lands.
-                .requestMatchers(HttpMethod.GET,    "/v1/trades/stream").permitAll()
                 .requestMatchers(HttpMethod.GET,    "/v1/trades/**").hasAnyRole("VIEWER","TRADER","RECON_ANALYST","ADMIN")
                 .requestMatchers(HttpMethod.POST,   "/v1/trades").hasAnyRole("TRADER","ADMIN")
                 .requestMatchers(HttpMethod.PUT,    "/v1/trades/**").hasAnyRole("TRADER","ADMIN")

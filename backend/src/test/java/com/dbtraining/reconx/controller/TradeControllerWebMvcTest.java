@@ -6,7 +6,6 @@ import com.dbtraining.reconx.dto.TradeResponse;
 import com.dbtraining.reconx.repository.entity.Trade;
 import com.dbtraining.reconx.security.JwtAuthenticationFilter;
 import com.dbtraining.reconx.service.TradeService;
-import com.dbtraining.reconx.service.TradeStreamBroadcaster;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +48,6 @@ class TradeControllerWebMvcTest {
     @Autowired private ObjectMapper objectMapper;
     @MockBean  private TradeService tradeService;
     @MockBean  private TradeMapper tradeMapper;
-    @MockBean  private TradeStreamBroadcaster tradeStreamBroadcaster;
 
     private TradeRequest validRequest() {
         return new TradeRequest(
