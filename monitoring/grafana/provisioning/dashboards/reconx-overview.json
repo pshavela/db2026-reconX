@@ -78,7 +78,7 @@
           "editorMode": "code",
           "expr": "sum by (status) (trades_by_status)",
           "instant": false,
-          "legendFormat": "__auto",
+          "legendFormat": "{{status}}",
           "range": true,
           "refId": "A"
         }
