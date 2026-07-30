@@ -5,6 +5,6 @@ TICKET-ADV100,Completed,Theme toggle with localStorage persistence;aria-pressed;
 TICKET-ADV101,Completed,Trade feed flex column with slide-in animation;three status modifiers (matched/break/pending)
 TICKET-ADV102,Completed,Three keyframes (slide-in/fade-in/pulse);alert--danger banner;prefers-reduced-motion override
 TICKET-ADV103,Completed,Responsive breakpoints (desktop/tablet/mobile);sidebar as horizontal strip on tablet;hidden on mobile
-TICKET-ADV104,Not Started,EventSource SSE subscription
-TICKET-ADV105,Not Started,Prepend-and-animate with 50-entry DOM cap
-TICKET-ADV106,Not Started,Sortable/resizable/frozen-header data table
+TICKET-ADV104,Completed,EventSource to /api/v1/trades/stream with onopen/onerror badge;beforeunload cleanup;demo fallback preserved;escapeHtml XSS guard;Intl.NumberFormat for qty/price
+TICKET-ADV105,Completed,prependTradeRow with feed.prepend();trade-card--new modifier removed after 500ms;50-entry DOM cap;escapeHtml+Intl.NumberFormat;bundled into ADV104 sse.js
+TICKET-ADV106,Completed,trades.html with data table;click-to-sort asc/desc with aria-sort+arrow indicators;drag-to-resize on document;sticky header;demo data fallback;escapeHtml+Intl.NumberFormat;status coloring
