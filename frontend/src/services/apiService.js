@@ -30,14 +30,8 @@ export const api = {
   },
   listTrades: (params = '')  => request('GET', `/v1/trades${params}`),
   createTrade: (req)         => request('POST', '/v1/trades', req),
-  updateStatus: (id, status) => {
-    // TODO(TICKET-ADV119): PATCH /v1/trades/{id}/status with { status }.
-    throw new Error('TICKET-ADV119 not implemented');
-  },
-  deleteTrade: (id)          => {
-    // TODO(TICKET-ADV119): DELETE /v1/trades/{id}.
-    throw new Error('TICKET-ADV119 not implemented');
-  },
+  updateStatus: (id, status) => request('PATCH', `/v1/trades/${id}/status`, { status }),
+  deleteTrade: (id)          => request('DELETE', `/v1/trades/${id}`),
   runRecon: (req)            => {
     // TODO(TICKET-ADV121): POST /v1/recon/run to enqueue a recon job.
     throw new Error('TICKET-ADV121 not implemented');
