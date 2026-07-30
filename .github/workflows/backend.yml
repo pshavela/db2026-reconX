@@ -36,6 +36,10 @@ jobs:
       - name: Make Maven Wrapper executable
         run: chmod +x mvnw
 
+      - name: Build and install recon-audit-starter (TICKET-ADV095)
+        working-directory: recon-audit-starter
+        run: ../backend/mvnw -B -f pom.xml install
+
       - name: Verify with Maven
         run: ./mvnw -B verify
 
