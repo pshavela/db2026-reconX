@@ -45,6 +45,25 @@ entirely) — at which point this bridge's direct call from
 `TradeController.create()` should be removed so trades created through any
 path (not just the REST endpoint) still reach the live feed.
 
+## Bug found after the initial version: connection never showed as "connected"
+- The first version of `TradeStreamBroadcaster.subscribe()` didn't write
+  anything to the `SseEmitter` until the first real trade was broadcast.
+  Spring/Tomcat doesn't commit the HTTP response (status line + headers)
+  until the first byte is actually written — so with zero trades created,
+  `curl -N` received **zero bytes**, not even a `200` status, for as long as
+  the connection stayed open.
+- The browser's native `EventSource` only fires `onopen` (which is what
+  flips the Dashboard's "SSE: connected" text) once it actually receives that
+  response. Net effect: a user could sit on the Dashboard forever and it
+  would say "disconnected" the whole time, unless someone happened to create
+  a trade at that exact moment.
+- Fix: `subscribe()` now immediately sends a no-op SSE comment
+  (`emitter.send(SseEmitter.event().comment("connected"))`) before returning
+  the emitter, forcing the response to commit right away. Verified with
+  `curl -v -N` against an idle connection (no concurrent trade creation) —
+  now returns `200`/`text/event-stream` headers and a `:connected` comment
+  immediately, instead of hanging with 0 bytes.
+
 ## Verification
 - `curl -N http://localhost:8080/api/v1/trades/stream` (no auth) stays open;
   a concurrent authenticated `POST /v1/trades` sends the created trade down
