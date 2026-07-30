@@ -18,7 +18,7 @@ spring:
   # H2 doesn't ship a JSONB type — Liquibase preconditions in the changelog skip
   # the JSONB GIN-index step on H2 (see 003-jsonb.xml).
   jpa:
-    show-sql: true
+    # show-sql: true
     properties:
       hibernate.dialect: org.hibernate.dialect.H2Dialect
 
@@ -30,4 +30,13 @@ spring:
 logging:
   level:
     com.dbtraining.reconx: DEBUG
-    org.hibernate.SQL: DEBUG
+    # org.hibernate.SQL: DEBUG
+
+# separate gRPC Reconciliation Engine server
+grpc:
+  client:
+    grpc-engine-server:
+      address: static://127.0.0.1:5555
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext

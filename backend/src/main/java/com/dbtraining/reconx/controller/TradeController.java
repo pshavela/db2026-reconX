@@ -2,9 +2,7 @@ package com.dbtraining.reconx.controller;
 
 import java.net.URI;
 import java.time.LocalDate;
-import java.util.Map;
 
-import com.dbtraining.reconx.dto.*;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -21,6 +19,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dbtraining.reconx.dto.PagedResponse;
+import com.dbtraining.reconx.dto.StatusUpdate;
+import com.dbtraining.reconx.dto.TradeMapper;
+import com.dbtraining.reconx.dto.TradeRequest;
+import com.dbtraining.reconx.dto.TradeResponse;
 import com.dbtraining.reconx.repository.entity.Trade;
 import com.dbtraining.reconx.service.TradeService;
 
@@ -60,7 +63,7 @@ public class TradeController {
             @RequestParam(required = false) String status,
             @RequestParam(required = false) Long counterpartyId,
             @PageableDefault(size = 20, sort = "tradeDate", direction = Sort.Direction.DESC) Pageable pageable) {
-        return PagedResponse.from(service.list(from, to, status, counterpartyId, pageable), mapper::toResponse);
+        return PagedResponse.from(service.list(from, to, status, counterpartyId, pageable), it -> it);
     }
 
     @PostMapping
@@ -68,11 +71,11 @@ public class TradeController {
     public ResponseEntity<TradeResponse> create(@Valid @RequestBody TradeRequest req,
                                                 @AuthenticationPrincipal Object principal) {
         String actor = String.valueOf(principal);
-        Trade saved = service.create(req, actor);
+        Trade trade = service.create(req, actor);
 
         return ResponseEntity
-                .created(URI.create("/api/v1/trades/" + saved.getId()))
-                .body(mapper.toResponse(saved));
+                .created(URI.create("/api/v1/trades/" + trade.getId()))
+                .body(mapper.toResponse(trade));
     }
 
     @PutMapping("/{id}")

@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+option java_outer_classname = "ReconGrpc";
+
+service ReconService {
+  rpc ReconcileTradesGrpc(stream TradeGrpc) returns (stream ReconResultGrpc);
+}
+
+/** CLIENT *******************************************************************************/
+
+message TradeGrpc {
+  OriginGrpc origin = 1;
+  int64 trade_id = 2;
+  oneof trade {
+    // For now only EquityTrade
+    EquityTradeGrpc equityTrade = 3;
+    // FXTrade fxTrade;
+    // ...
+  }
+}
+
+message EquityTradeGrpc {
+  string trade_ref = 1;
+  string instrument_symbol = 2;
+  double quantity = 3;
+  double price = 4;
+  string currency = 5;
+  SideGrpc side = 6;
+  string trade_date = 7;
+  int64 counter_party_id = 8;
+}
+
+enum OriginGrpc {
+  ORIGIN_UNSPECIFIED = 0;
+  INTERNAL = 1;
+  EXTERNAL = 2;
+}
+
+enum SideGrpc {
+  SIDE_UNSPECIFIED = 0;
+  BUY = 1;
+  SELL = 2;
+}
+
+
+/** SERVER *******************************************************************************/
+
+message ReconResultGrpc {
+  int64 trade_id = 1;
+  string trade_ref = 2;
+  StatusGrpc status = 3;
+  string discrepancy_type = 4;
+  string details = 5;
+}
+
+enum StatusGrpc {
+  STATUS_UNSPECIFIED = 0;
+  MATCHED = 1;
+  BREAK = 2;
+}

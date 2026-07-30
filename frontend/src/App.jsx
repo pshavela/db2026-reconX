@@ -8,6 +8,7 @@ import { useTheme } from '@context/ThemeContext.jsx';
 const Dashboard = lazy(() => import('@pages/Dashboard.jsx'));
 const Trades    = lazy(() => import('@pages/Trades.jsx'));
 const AddTrade  = lazy(() => import('@pages/AddTrade.jsx'));
+const ReconJobs = lazy(() => import('@pages/ReconJobs.jsx'));
 const Login     = lazy(() => import('@pages/Login.jsx'));
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
         <nav className="layout__nav">
           <Link to="/">Dashboard</Link>
           <Link to="/trades">Trades</Link>
+          <Link to="/recon-jobs">Recon jobs</Link>
           <Link to="/trades/new">Add trade</Link>
           <button type="button" onClick={toggle} aria-label="Toggle theme">
             {theme === 'dark' ? '☀️ Light' : '🌙 Dark'}
@@ -32,6 +34,7 @@ function App() {
             <Route path="/"           element={<Dashboard />} />
             <Route path="/trades"     element={<Trades />} />
             <Route path="/trades/new" element={<AddTrade />} />
+            <Route path="/recon-jobs" element={<ReconJobs />} />
             <Route path="*"           element={<Navigate to="/" replace />} />
           </Routes>
         </Suspense>

@@ -100,4 +100,21 @@ public class GlobalExceptionHandler {
         pd.setProperty("timestamp", Instant.now());
         return pd;
     }
+
+    @ExceptionHandler(InvalidCSVFileException.class)
+    public ProblemDetail csvInvalid(InvalidCSVFileException ex) {
+        ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+        pd.setTitle("Invalid CSV");
+        pd.setProperty("timestamp", Instant.now());
+        return pd;
+    }
+
+    @ExceptionHandler(ReconJobNotFoundException.class)
+    public ProblemDetail reconJobNotFound(ReconJobNotFoundException ex) {
+        ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+        pd.setType(URI.create("https://reconx.dbtraining.com/errors/job-not-found"));
+        pd.setTitle("Recon Job not Found");
+        pd.setProperty("timestamp", Instant.now());
+        return pd;
+    }
 }

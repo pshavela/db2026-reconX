@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -22,6 +24,8 @@ public interface TradeRepository
         extends JpaRepository<Trade, Long>, JpaSpecificationExecutor<Trade> {
 
     Optional<Trade> findByTradeRef(String tradeRef);
+
+    List<Trade> findByTradeRefIn(Collection<String> tradeRefs);
 
     @Query("""
         SELECT t FROM Trade t

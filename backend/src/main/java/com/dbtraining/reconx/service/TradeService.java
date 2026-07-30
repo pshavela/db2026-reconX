@@ -1,6 +1,16 @@
 package com.dbtraining.reconx.service;
 
+import java.time.LocalDate;
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.dbtraining.reconx.dto.TradeMapper;
 import com.dbtraining.reconx.dto.TradeRequest;
+import com.dbtraining.reconx.dto.TradeResponse;
 import com.dbtraining.reconx.exception.CounterpartyNotFoundException;
 import com.dbtraining.reconx.exception.DuplicateTradeRefException;
 import com.dbtraining.reconx.exception.InstrumentNotFoundException;
@@ -14,19 +24,7 @@ import com.dbtraining.reconx.repository.TradeSpecifications;
 import com.dbtraining.reconx.repository.entity.Counterparty;
 import com.dbtraining.reconx.repository.entity.Instrument;
 import com.dbtraining.reconx.repository.entity.Trade;
-import com.dbtraining.reconx.dto.TradeEvent;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.util.Optional;
-import java.util.UUID;
-
-import static com.dbtraining.reconx.repository.TradeSpecifications.*;
 
 /**
  * ============================================================================
@@ -46,17 +44,19 @@ public class TradeService {
     private final TradeRepository tradeRepo;
     private final CounterpartyRepository cpRepo;
     private final InstrumentRepository instRepo;
+    private final TradeMapper mapper;
     private final TradeEventProducer events;
     private final TradeMetrics metrics;
 
     public TradeService(TradeRepository tradeRepo,
                         CounterpartyRepository cpRepo,
-                        InstrumentRepository instRepo,
+                        InstrumentRepository instRepo, TradeMapper mapper,
                         TradeEventProducer events,
                         TradeMetrics metrics) {
         this.tradeRepo = tradeRepo;
         this.cpRepo = cpRepo;
         this.instRepo = instRepo;
+        this.mapper = mapper;
         this.events = events;
         this.metrics = metrics;
     }
@@ -156,11 +156,20 @@ public class TradeService {
     }
 
     @Transactional(readOnly = true)
-    public Page<Trade> list(LocalDate from, LocalDate to, String status, Long counterpartyId, Pageable pageable) {
+    public Page<TradeResponse> list(LocalDate from, LocalDate to, String status, Long counterpartyId, Pageable pageable) {
         return tradeRepo.findAll(
                 TradeSpecifications.hasCounterparty(counterpartyId)
                         .and(TradeSpecifications.tradeDateBetween(from, to))
                         .and(TradeSpecifications.hasStatus(status)),
-                pageable);
+                pageable).map(mapper::toResponse);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Trade> listPending(LocalDate from, LocalDate to, String assetClass) {
+        return tradeRepo.findAll(
+                TradeSpecifications.tradeDateBetween(from, to)
+                        .and(TradeSpecifications.hasStatus("PENDING"))
+                        .and(TradeSpecifications.hasAssetClass(assetClass))
+        );
     }
 }
