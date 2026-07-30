@@ -1,7 +1,7 @@
 # Ticket ADV092
 
 Assignee: alexandraelenadumitrescu
-Status: Code done and verified; Grafana panel itself not added yet
+Status: Completed
 
 ## Problem
 - No way to see the current breakdown of trades across statuses (PENDING,
@@ -13,6 +13,11 @@ Status: Code done and verified; Grafana panel itself not added yet
   tagged `status=<name>`, backed by the already-existing
   `TradeRepository.countByStatus(String)`.
 - Did not need to touch `TradeRepository` — `countByStatus` already existed.
+- Added the pie chart panel itself to
+  `monitoring/grafana/provisioning/dashboards/reconx-overview.json` — built
+  through Grafana's panel editor (query `sum by (status) (trades_by_status)`,
+  type `piechart`, legend `{{status}}`), then exported via Dashboard settings
+  → JSON Model and merged back into the provisioning file.
 
 ## How to demonstrate it works
 
@@ -43,10 +48,17 @@ Status: Code done and verified; Grafana panel itself not added yet
    ```
    Returns a JSON vector with one result per status (verified — see chat log
    2026-07-29).
+4. Confirmed the panel itself via the Grafana API after a full container
+   restart (`docker compose restart grafana`), proving it's sourced from the
+   provisioning file, not just Grafana's session state:
+   ```powershell
+   curl.exe -s -u admin:admin http://localhost:3000/api/dashboards/uid/reconx-overview
+   ```
+   `"Trades by status (ADV092)"` is the first entry in the returned
+   `dashboard.panels` array — verified 2026-07-29.
 
-## Still open
-- The actual pie chart **panel** in Grafana (`monitoring/grafana/provisioning/dashboards/reconx-overview.json`)
-  has not been added yet — the metric exists and is scraped, but nobody has
-  clicked through Grafana's panel editor to build the visual panel and export
-  its JSON back into the dashboard file. See `DASHBOARD-DEMO-DATA.md` for how
-  to get non-empty data to look at while building the panel.
+## Known caveat
+- All series read `0.0` on a fresh dev database — trades aren't seeded
+  automatically (see TICKET-ADV079). See `DASHBOARD-DEMO-DATA.md` for how to
+  safely populate non-zero demo data without corrupting existing
+  counterparties/instruments.
