@@ -38,15 +38,15 @@ body {
 }
 
 /* TICKET-ADV098 — page shell layout */
-.layout { display: grid; grid-template-rows: 64px 1fr; min-height: 100vh; }
+.layout { display: grid; grid-template-rows: 84px 1fr; min-height: 100vh; }
 .layout__header { display: flex; align-items: center; gap: var(--space-4); padding: 0 var(--space-4); background: var(--color-primary); color: #fff; }
 .layout__nav    { display: flex; gap: var(--space-3); margin-left: auto; }
 .layout__nav a  { color: #fff; text-decoration: none; }
 .layout__nav a:hover { text-decoration: underline; }
 
 /* Team Tiger brand mark — the X is the tiger logo, not a letter */
-.brand { display: flex; align-items: center; margin: 0; font-size: 1.5rem; font-weight: 700; letter-spacing: 0.02em; }
-.brand__x { height: 1.15em; width: auto; margin-left: 0.05em; vertical-align: middle; }
+.brand { display: flex; align-items: center; margin: 0; font-size: 1.9rem; font-weight: 700; letter-spacing: 0.02em; }
+.brand__x { height: 2.3em; width: auto; margin-left: -0.28em; vertical-align: middle; }
 .layout__main   { padding: var(--space-4); }
 
 /* TICKET-ADV101 / ADV110 — BEM stat cards + trade cards */
