@@ -1,12 +1,14 @@
 package com.dbtraining.reconx.service;
 
-import com.dbtraining.reconx.dto.TradeResponse;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import com.dbtraining.reconx.dto.TradeResponse;
 
 /**
  * Temporary, in-process substitute for the Kafka-based trade-events pipeline
@@ -22,6 +24,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class TradeStreamBroadcaster {
 
     private final List<SseEmitter> emitters = new CopyOnWriteArrayList<>();
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     public SseEmitter subscribe() {
         SseEmitter emitter = new SseEmitter(0L);
@@ -35,19 +38,22 @@ public class TradeStreamBroadcaster {
             // onopen, so the UI shows "disconnected" forever if nothing is
             // being created. A no-op comment forces headers out immediately.
             emitter.send(SseEmitter.event().comment("connected"));
-        } catch (IOException ex) {
+        } catch (Exception e) {
             emitters.remove(emitter);
         }
         return emitter;
     }
 
     public void broadcast(TradeResponse trade) {
-        for (SseEmitter emitter : emitters) {
-            try {
-                emitter.send(SseEmitter.event().data(trade));
-            } catch (IOException | IllegalStateException ex) {
-                emitters.remove(emitter);
+        // run separately to avoid blocking the thread that created the trade
+        executor.execute(() -> {
+            for (SseEmitter emitter : emitters) {
+                try {
+                    emitter.send(SseEmitter.event().data(trade));
+                } catch (Exception e) {
+                    emitters.remove(emitter);
+                }
             }
-        }
+        });
     }
 }

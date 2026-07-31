@@ -1,17 +1,22 @@
 package com.dbtraining.reconx.exception;
 
-import jakarta.validation.ConstraintViolationException;
+import java.net.URI;
+import java.time.Instant;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.async.AsyncRequestNotUsableException;
+import org.springframework.web.context.request.async.AsyncRequestTimeoutException;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.net.URI;
-import java.time.Instant;
-import java.util.stream.Collectors;
+import jakarta.validation.ConstraintViolationException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -116,5 +121,19 @@ public class GlobalExceptionHandler {
         pd.setTitle("Recon Job not Found");
         pd.setProperty("timestamp", Instant.now());
         return pd;
+    }
+
+    @ExceptionHandler(AsyncRequestTimeoutException.class)
+    @ResponseBody
+    public SseEmitter sseTimeoutException(AsyncRequestTimeoutException e) {
+        log.error("SSE Timeout Exception");
+        return null;
+    }
+
+    @ExceptionHandler(AsyncRequestNotUsableException.class)
+    @ResponseBody
+    public SseEmitter sseClientDisconnect(AsyncRequestNotUsableException e) {
+        log.error("SSE Client Disconnect:");
+        return null;
     }
 }
