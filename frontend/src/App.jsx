@@ -4,6 +4,7 @@ import { Routes, Route, Link, Navigate } from 'react-router-dom';
 import { withErrorBoundary } from '@components/withErrorBoundary.jsx';
 import { PageSkeleton } from '@components/PageSkeleton.jsx';
 import { useTheme } from '@context/ThemeContext.jsx';
+import logoX from '@/assets/logo-x-tiger.png';
 
 const Dashboard = lazy(() => import('@pages/Dashboard.jsx'));
 const Trades    = lazy(() => import('@pages/Trades.jsx'));
@@ -15,7 +16,9 @@ function App() {
   return (
     <div className="layout">
       <header className="layout__header">
-        <h1>ReconX</h1>
+        <h1 className="brand">
+          RECON<img src={logoX} alt="X — Team Tiger" className="brand__x" />
+        </h1>
         <nav className="layout__nav">
           <Link to="/">Dashboard</Link>
           <Link to="/trades">Trades</Link>

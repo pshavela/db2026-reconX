@@ -43,6 +43,10 @@ body {
 .layout__nav    { display: flex; gap: var(--space-3); margin-left: auto; }
 .layout__nav a  { color: #fff; text-decoration: none; }
 .layout__nav a:hover { text-decoration: underline; }
+
+/* Team Tiger brand mark — the X is the tiger logo, not a letter */
+.brand { display: flex; align-items: center; margin: 0; font-size: 1.5rem; font-weight: 700; letter-spacing: 0.02em; }
+.brand__x { height: 1.15em; width: auto; margin-left: 0.05em; vertical-align: middle; }
 .layout__main   { padding: var(--space-4); }
 
 /* TICKET-ADV101 / ADV110 — BEM stat cards + trade cards */
