@@ -1,93 +1,78 @@
-/* TICKET-ADV101 / ADV102 — CSS custom properties + data-theme overrides */
-:root {
-  --color-primary: #003366;
-  --color-success: #28a745;
-  --color-warning: #ffc107;
-  --color-danger:  #dc3545;
-  --color-bg:      #ffffff;
-  --color-text:    #1a1a1a;
-  --color-surface: #f5f5f5;
-  --color-border:  #d4d4d4;
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --radius:  4px;
-  --font-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+/* ReconX design tokens — "clean light fintech": a navy/paper ledger palette
+   with a serif brand mark, sans UI, and monospace figures for scannable
+   numbers. Tokens are real CSS custom properties (Tailwind v4 keeps them
+   that way), so the [data-theme="dark"] override below re-points every
+   utility class at once — same mechanism the app already used pre-Tailwind. */
+@import "tailwindcss";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@theme {
+  --font-display: "Source Serif 4", ui-serif, Georgia, serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --color-canvas: #f5f7fa;
+  --color-paper: #ffffff;
+  --color-navy: #10233f;
+  --color-signal: #2e6be6;
+  --color-ink: #101828;
+  --color-slate: #64748b;
+  --color-line: #e4e9f0;
+
+  --color-success: #0f9d58;
+  --color-success-bg: #e6f7ed;
+  --color-danger: #dc2626;
+  --color-danger-bg: #fee2e2;
+  --color-warning: #b45309;
+  --color-warning-bg: #fef3e2;
+  --color-neutral: #64748b;
+  --color-neutral-bg: #eef1f5;
 }
 
 [data-theme="dark"] {
-  --color-bg:      #1a1a1a;
-  --color-text:    #f5f5f5;
-  --color-surface: #2a2a2a;
-  --color-border:  #3a3a3a;
+  --color-canvas: #0b1220;
+  --color-paper: #121a2b;
+  --color-navy: #0b1730;
+  --color-signal: #5b8df6;
+  --color-ink: #e7ecf5;
+  --color-slate: #93a2bc;
+  --color-line: #23304a;
+
+  --color-success: #34d399;
+  --color-success-bg: #0f2a20;
+  --color-danger: #f87171;
+  --color-danger-bg: #3b1414;
+  --color-warning: #fbbf24;
+  --color-warning-bg: #3a2a0a;
+  --color-neutral: #93a2bc;
+  --color-neutral-bg: #1b2536;
 }
 
-/* TICKET-ADV104 — respect reduced-motion preference */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation: none !important; transition: none !important; }
+@layer base {
+  body {
+    @apply bg-canvas text-ink font-sans antialiased;
+  }
+
+  /* TICKET-ADV109 — keyboard focus visibility, kept from the original design */
+  :focus-visible {
+    outline: 2px solid var(--color-signal);
+    outline-offset: 2px;
+  }
+
+  /* TICKET-ADV104 — respect reduced-motion preference, kept from the original */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
 }
 
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  background: var(--color-bg);
-  color: var(--color-text);
-  font-family: var(--font-base);
+@layer utilities {
+  /* Ledger-style tabular figures — used on every numeric column/value */
+  .figures {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
 }
-
-/* TICKET-ADV098 — page shell layout */
-.layout { display: grid; grid-template-rows: 64px 1fr; min-height: 100vh; }
-.layout__header { display: flex; align-items: center; gap: var(--space-4); padding: 0 var(--space-4); background: var(--color-primary); color: #fff; }
-.layout__nav    { display: flex; gap: var(--space-3); margin-left: auto; }
-.layout__nav a  { color: #fff; text-decoration: none; }
-.layout__nav a:hover { text-decoration: underline; }
-.layout__main   { padding: var(--space-4); }
-
-/* TICKET-ADV101 / ADV110 — BEM stat cards + trade cards */
-.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-3); margin: var(--space-3) 0; }
-.stat-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius); padding: var(--space-3); }
-.stat-card h3 { margin: 0; font-size: 14px; color: var(--color-text); opacity: 0.7; }
-.stat-card p  { margin: var(--space-2) 0 0; font-size: 24px; font-weight: 600; }
-
-/* TICKET-ADV114 — data-table styling */
-.data-table { display: flex; flex-direction: column; border: 1px solid var(--color-border); border-radius: var(--radius); }
-.data-table__header { display: grid; grid-template-columns: repeat(5, 1fr); background: var(--color-surface); }
-.data-table__th { padding: var(--space-2) var(--space-3); border: none; background: transparent; color: var(--color-text); text-align: left; cursor: pointer; }
-.data-table__th--active { font-weight: 700; }
-.data-table__row { display: grid; grid-template-columns: repeat(5, 1fr); padding: var(--space-2) var(--space-3); border-top: 1px solid var(--color-border); }
-.data-table__pagination { display: flex; gap: var(--space-3); padding: var(--space-2); justify-content: center; align-items: center; }
-
-/* TICKET-ADV122 — page skeleton shown while a route chunk lazy-loads */
-.page-skeleton { display: grid; gap: var(--space-3); padding: var(--space-2) 0; }
-.page-skeleton__bar {
-  height: 16px; border-radius: var(--radius); background: var(--color-surface);
-  background-image: linear-gradient(90deg, var(--color-surface) 25%, var(--color-border) 37%, var(--color-surface) 63%);
-  background-size: 400% 100%;
-  animation: page-skeleton-shimmer 1.4s ease infinite;
-}
-.page-skeleton__bar--title { width: 40%; height: 24px; }
-.page-skeleton__bar--short { width: 60%; }
-@keyframes page-skeleton-shimmer {
-  0%   { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-/* TICKET-ADV123 / ADV072 — form styling */
-.login-form, .trade-form { display: grid; gap: var(--space-2); max-width: 360px; }
-.login-form label, .trade-form label { display: grid; gap: var(--space-1); }
-.login-form input, .trade-form input, .trade-form select {
-  padding: var(--space-2); border: 1px solid var(--color-border); border-radius: var(--radius);
-  background: var(--color-bg); color: var(--color-text);
-}
-.form-error { color: var(--color-danger); font-size: 13px; margin: 0; }
-
-button { padding: var(--space-2) var(--space-3); border: 1px solid var(--color-primary); background: var(--color-primary); color: #fff; border-radius: var(--radius); cursor: pointer; }
-button:disabled { opacity: 0.6; cursor: not-allowed; }
-
-/* TICKET-ADV113 — error boundary fallback */
-.error-fallback { padding: var(--space-4); border: 1px solid var(--color-danger); border-radius: var(--radius); background: var(--color-surface); }
-
-/* TICKET-ADV109 — keyboard focus visibility */
-:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }

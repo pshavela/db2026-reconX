@@ -2,11 +2,22 @@ import React, { useEffect, useState } from 'react';
 import { withAuth } from '@components/withAuth.jsx';
 import { api } from '@services/apiService.js';
 import DataTable from '@components/DataTable.jsx';
+import { StatusPill } from '@components/StatusPill.jsx';
+
+const COLUMNS = [
+  { key: 'jobId', label: 'Job ID' },
+  { key: 'fromDate', label: 'From' },
+  { key: 'toDate', label: 'To' },
+  { key: 'status', label: 'Status' },
+  { key: 'tradesProcessed', label: 'Processed' },
+  { key: 'breaksDetected', label: 'Breaks' },
+];
 
 function ReconJobs() {
   const [jobs, setJobs] = useState({ items: [], totalPages: 0 });
   const [page, setPage] = useState(0);
-  const [uploadError, setUploadError] = useState(null);
+  const [uploadMessage, setUploadMessage] = useState(null);
+  const [isUploadError, setIsUploadError] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
@@ -19,16 +30,23 @@ function ReconJobs() {
 
   const handleFileSubmit = async (event) => {
     event.preventDefault();
-    setUploadError(null);
+    const form = event.currentTarget;
+
+    setUploadMessage(null);
+    setIsUploadError(false);
     setIsUploading(true);
 
-    const formData = new FormData(event.currentTarget);
+    const formData = new FormData(form);
     try {
       await api.runReconCsv(formData);
-      setUploadError('Recon job submitted successfully. Refresh list after a moment.');
-      event.currentTarget.reset();
+      setUploadMessage('Recon job queued successfully. The status will appear in the list shortly.');
+      setIsUploadError(false);
+      if (typeof form.reset === 'function') {
+        form.reset();
+      }
     } catch (err) {
-      setUploadError(err.message);
+      setUploadMessage(err.message || 'Unable to submit the recon job. Please try again.');
+      setIsUploadError(true);
     } finally {
       setIsUploading(false);
     }
@@ -36,49 +54,77 @@ function ReconJobs() {
 
   return (
     <section>
-      <h2>Recon jobs</h2>
-      <form onSubmit={handleFileSubmit} className="recon-job-form">
-        <label>
+      <h2 className="font-display text-2xl font-semibold text-ink">Recon jobs</h2>
+
+      <form
+        onSubmit={handleFileSubmit}
+        className="mt-4 grid max-w-xl gap-4 rounded-xl border border-line bg-paper p-6 shadow-sm sm:grid-cols-2"
+      >
+        <label className="grid gap-1 text-sm text-ink">
           From date
-          <input type="date" name="from" required />
+          <input
+            type="date"
+            name="from"
+            required
+            className="rounded-lg border border-line bg-canvas/40 px-3 py-2 text-sm text-ink focus:border-signal focus:outline-none"
+          />
         </label>
-        <label>
+        <label className="grid gap-1 text-sm text-ink">
           To date
-          <input type="date" name="to" required />
+          <input
+            type="date"
+            name="to"
+            required
+            className="rounded-lg border border-line bg-canvas/40 px-3 py-2 text-sm text-ink focus:border-signal focus:outline-none"
+          />
         </label>
-        <label>
+        <label className="grid gap-1 text-sm text-ink sm:col-span-2">
           External trades CSV
-          <input type="file" name="file" accept=".csv" required />
+          <input
+            type="file"
+            name="file"
+            accept=".csv"
+            required
+            className="rounded-lg border border-line bg-canvas/40 px-3 py-1.5 text-sm text-ink file:mr-3 file:rounded-md file:border-0 file:bg-signal file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-white file:cursor-pointer"
+          />
         </label>
-        {uploadError && <p role="alert" className="form-error">{uploadError}</p>}
-        <button type="submit" disabled={isUploading}>{isUploading ? 'Submitting…' : 'Run job'}</button>
+        {uploadMessage && (
+          <p
+            role="alert"
+            className={`text-sm sm:col-span-2 ${isUploadError ? 'text-danger' : 'text-ink'}`}
+          >
+            {uploadMessage}
+          </p>
+        )}
+        <button
+          type="submit"
+          disabled={isUploading}
+          className="cursor-pointer justify-self-start rounded-lg bg-signal px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 sm:col-span-2"
+        >
+          {isUploading ? 'Submitting…' : 'Run job'}
+        </button>
       </form>
 
-      <DataTable>
-        <DataTable.Header columns={[
-          { key: 'jobId', label: 'Job ID' },
-          { key: 'fromDate', label: 'From' },
-          { key: 'toDate', label: 'To' },
-          { key: 'status', label: 'Status' },
-          { key: 'tradesProcessed', label: 'Processed' },
-          { key: 'breaksDetected', label: 'Breaks' },
-        ]} />
-        <DataTable.Body rows={jobs.items} render={(job) => (
-          <span style={{ display: 'contents' }}>
-            <span>{job.jobId}</span>
-            <span>{job.fromDate}</span>
-            <span>{job.toDate}</span>
-            <span>{job.status}</span>
-            <span>{job.tradesProcessed ?? '-'}</span>
-            <span>{job.breaksDetected ?? '-'}</span>
-          </span>
-        )} />
-        <DataTable.Pagination
-          page={page}
-          totalPages={Math.max(1, jobs.totalPages)}
-          onChange={setPage}
-        />
-      </DataTable>
+      <div className="mt-6">
+        <DataTable columns={COLUMNS}>
+          <DataTable.Header columns={COLUMNS} />
+          <DataTable.Body rows={jobs.items} render={(job) => (
+            <span className="contents">
+              <span className="figures text-ink">{job.jobId}</span>
+              <span className="figures text-ink">{job.fromDate}</span>
+              <span className="figures text-ink">{job.toDate}</span>
+              <StatusPill status={job.status} />
+              <span className="figures text-ink">{job.tradesProcessed ?? '-'}</span>
+              <span className="figures text-ink">{job.breaksDetected ?? '-'}</span>
+            </span>
+          )} />
+          <DataTable.Pagination
+            page={page}
+            totalPages={Math.max(1, jobs.totalPages)}
+            onChange={setPage}
+          />
+        </DataTable>
+      </div>
     </section>
   );
 }

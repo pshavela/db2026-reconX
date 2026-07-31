@@ -20,10 +20,15 @@ class ErrorBoundary extends React.Component {
   render() {
     if (this.state.error) {
       return (
-        <div role="alert" className="error-fallback">
-          <h2>Something went wrong</h2>
-          <pre>{String(this.state.error.message || this.state.error)}</pre>
-          <button onClick={() => this.setState({ error: null })}>Try again</button>
+        <div role="alert" className="rounded-xl border-l-4 border-l-danger border-line bg-paper p-6 shadow-sm">
+          <h2 className="font-display text-lg font-semibold text-ink">Something went wrong</h2>
+          <pre className="mt-2 overflow-x-auto text-sm text-slate">{String(this.state.error.message || this.state.error)}</pre>
+          <button
+            onClick={() => this.setState({ error: null })}
+            className="mt-4 cursor-pointer rounded-lg bg-signal px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90"
+          >
+            Try again
+          </button>
         </div>
       );
     }
