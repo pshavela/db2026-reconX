@@ -20,7 +20,10 @@ import com.dbtraining.reconx.dto.TradeResponse;
  * Not tied to a real ticket. Meant to be replaced once trade-events + a
  * dedicated consumer exist — see tracking-progress/day08/NOTE-sse-temporary-bridge.md.
  */
-@Component
+
+
+// For now, SSE does not work well with Spring Boot 3.0.5
+// @Component
 public class TradeStreamBroadcaster {
 
     private final List<SseEmitter> emitters = new CopyOnWriteArrayList<>();

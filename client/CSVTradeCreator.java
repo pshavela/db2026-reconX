@@ -56,7 +56,7 @@ public class CSVTradeCreator {
                           "price": %s,
                           "tradeDate": "%s"
                         }
-                        """.formatted(tradeRef, instrumentId, counterpartyId, side, quantity, price, tradeDate);
+                        """.formatted(escape(tradeRef), instrumentId, counterpartyId, side, quantity, price, tradeDate);
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(ENDPOINT))
@@ -84,5 +84,11 @@ public class CSVTradeCreator {
                 }
             }
         }
+    }
+
+    private static String escape(String value) {
+        return value
+                .replace("\\", "\\\\")
+                .replace("\"", "\\\"");
     }
 }

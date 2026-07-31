@@ -52,19 +52,20 @@ public class TradeController {
 
     private final TradeService service;
     private final TradeMapper mapper;
-    private final TradeStreamBroadcaster broadcaster;
+    // private final TradeStreamBroadcaster broadcaster;
 
-    public TradeController(TradeService service, TradeMapper mapper, TradeStreamBroadcaster broadcaster) {
+    public TradeController(TradeService service, TradeMapper mapper) { // TradeStreamBroadcaster broadcaster) {
         this.service = service;
         this.mapper = mapper;
-        this.broadcaster = broadcaster;
+        // this.broadcaster = broadcaster;
     }
 
+    /*
     @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     @Operation(summary = "Live trade feed (SSE) — temporary in-process bridge, not yet backed by Kafka (ADV128/ADV129)")
     public SseEmitter stream() {
         return broadcaster.subscribe();
-    }
+    }*/
 
     @GetMapping
     @Operation(summary = "List trades — paginated, filterable, sortable")
@@ -84,7 +85,7 @@ public class TradeController {
         String actor = String.valueOf(principal);
         Trade saved = service.create(req, actor);
         TradeResponse response = mapper.toResponse(saved);
-        broadcaster.broadcast(response);
+        // broadcaster.broadcast(response);
 
         return ResponseEntity
                 .created(URI.create("/api/v1/trades/" + saved.getId()))
