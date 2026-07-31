@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import com.dbtraining.reconx.dto.PagedResponse;
 import com.dbtraining.reconx.dto.StatusUpdate;
@@ -26,6 +28,7 @@ import com.dbtraining.reconx.dto.TradeRequest;
 import com.dbtraining.reconx.dto.TradeResponse;
 import com.dbtraining.reconx.repository.entity.Trade;
 import com.dbtraining.reconx.service.TradeService;
+import com.dbtraining.reconx.service.TradeStreamBroadcaster;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -49,10 +52,18 @@ public class TradeController {
 
     private final TradeService service;
     private final TradeMapper mapper;
+    private final TradeStreamBroadcaster broadcaster;
 
-    public TradeController(TradeService service, TradeMapper mapper) {
+    public TradeController(TradeService service, TradeMapper mapper, TradeStreamBroadcaster broadcaster) {
         this.service = service;
         this.mapper = mapper;
+        this.broadcaster = broadcaster;
+    }
+
+    @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @Operation(summary = "Live trade feed (SSE) — temporary in-process bridge, not yet backed by Kafka (ADV128/ADV129)")
+    public SseEmitter stream() {
+        return broadcaster.subscribe();
     }
 
     @GetMapping
@@ -71,11 +82,13 @@ public class TradeController {
     public ResponseEntity<TradeResponse> create(@Valid @RequestBody TradeRequest req,
                                                 @AuthenticationPrincipal Object principal) {
         String actor = String.valueOf(principal);
-        Trade trade = service.create(req, actor);
+        Trade saved = service.create(req, actor);
+        TradeResponse response = mapper.toResponse(saved);
+        broadcaster.broadcast(response);
 
         return ResponseEntity
-                .created(URI.create("/api/v1/trades/" + trade.getId()))
-                .body(mapper.toResponse(trade));
+                .created(URI.create("/api/v1/trades/" + saved.getId()))
+                .body(response);
     }
 
     @PutMapping("/{id}")
