@@ -3,12 +3,16 @@ package com.dbtraining.reconx.repository.entity;
 import jakarta.persistence.*;
 import java.time.Instant;
 
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 /**
  * TICKET-ADV070 — Recon break record. Status transitions: OPEN -> RESOLVED.
  * Exposed via PUT /api/v1/recon/results/{id}/resolve.
  */
 @Entity
 @Table(name = "recon_breaks")
+@EntityListeners(AuditingEntityListener.class)
 public class ReconBreak {
 
     @Id
@@ -24,6 +28,7 @@ public class ReconBreak {
     @Column(nullable = false, length = 20)
     private String status = "OPEN";
 
+    @CreatedDate()
     @Column(name = "detected_at")
     private Instant detectedAt;
 
