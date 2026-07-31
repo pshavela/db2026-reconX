@@ -1,10 +1,11 @@
 // TICKET-ADV111 — Vite config + path aliases (@/components, @/hooks, ...)
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
 import { fileURLToPath, URL } from 'node:url';
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
       '@':          fileURLToPath(new URL('./src',          import.meta.url)),
@@ -13,6 +14,7 @@ export default defineConfig({
       '@services':  fileURLToPath(new URL('./src/services',  import.meta.url)),
       '@pages':     fileURLToPath(new URL('./src/pages',     import.meta.url)),
       '@context':   fileURLToPath(new URL('./src/context',   import.meta.url)),
+      '@lib':       fileURLToPath(new URL('./src/lib',       import.meta.url)),
     },
   },
   server: {

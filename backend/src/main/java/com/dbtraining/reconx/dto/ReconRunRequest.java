@@ -8,5 +8,6 @@ import java.time.LocalDate;
 public record ReconRunRequest(
         @NotNull LocalDate from,
         @NotNull LocalDate to,
+        // optional counterpartyId
         Long counterpartyId
 ) {}

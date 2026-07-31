@@ -4,11 +4,11 @@ import React from 'react';
 
 export function PageSkeleton() {
   return (
-    <div className="page-skeleton" role="status" aria-label="Loading page">
-      <div className="page-skeleton__bar page-skeleton__bar--title" />
-      <div className="page-skeleton__bar" />
-      <div className="page-skeleton__bar" />
-      <div className="page-skeleton__bar page-skeleton__bar--short" />
+    <div className="grid gap-3 py-2" role="status" aria-label="Loading page">
+      <div className="h-6 w-2/5 animate-pulse rounded-md bg-line" />
+      <div className="h-4 w-full animate-pulse rounded-md bg-line" />
+      <div className="h-4 w-full animate-pulse rounded-md bg-line" />
+      <div className="h-4 w-3/5 animate-pulse rounded-md bg-line" />
     </div>
   );
 }

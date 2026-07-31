@@ -71,4 +71,10 @@ public final class TradeSpecifications {
                 ? cb.conjunction()
                 : cb.equal(root.get("counterparty").get("id"), counterpartyId);
     }
+
+    public static Specification<Trade> hasAssetClass(String assetClass) {
+        return (root, q, cb) -> assetClass == null
+                ? cb.conjunction()
+                : cb.equal(root.get("assetClass"), assetClass);
+    }
 }

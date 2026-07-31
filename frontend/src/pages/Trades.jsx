@@ -7,6 +7,14 @@ import { TradeRow } from '@components/TradeRow.jsx';
 import { useDebouncedSearch } from '@hooks/useDebouncedSearch.js';
 import { api } from '@services/apiService.js';
 
+const COLUMNS = [
+  { key: 'tradeRef', label: 'Ref' },
+  { key: 'symbol',   label: 'Symbol' },
+  { key: 'qty',      label: 'Qty' },
+  { key: 'price',    label: 'Price' },
+  { key: 'status',   label: 'Status' },
+];
+
 function Trades() {
   const [search, setSearch] = useState('');
   const debounced = useDebouncedSearch(search, 300);
@@ -32,32 +40,33 @@ function Trades() {
 
   return (
     <section>
-      <h2>Trades</h2>
-      <input
-        aria-label="Filter by status"
-        placeholder="status filter (PENDING/MATCHED/…)"
-        value={search}
-        onChange={(e) => setSearch(e.target.value.toUpperCase())}
-      />
-      <DataTable>
-        <DataTable.Header columns={[
-          { key: 'tradeRef', label: 'Ref' },
-          { key: 'symbol',   label: 'Symbol' },
-          { key: 'qty',      label: 'Qty' },
-          { key: 'price',    label: 'Price' },
-          { key: 'status',   label: 'Status' },
-        ]} />
-        <DataTable.Body
-          rows={data.items}
-          render={(t) => <TradeRow trade={t} onClick={handleSelect} />}
+      <div className="flex items-center justify-between gap-4">
+        <h2 className="font-display text-2xl font-semibold text-ink">Trades</h2>
+        <input
+          aria-label="Filter by status"
+          placeholder="Filter by status (PENDING, MATCHED, …)"
+          value={search}
+          onChange={(e) => setSearch(e.target.value.toUpperCase())}
+          className="w-72 rounded-lg border border-line bg-paper px-3 py-2 text-sm text-ink placeholder:text-slate/70 focus:border-signal focus:outline-none"
         />
-        <DataTable.Pagination
-          page={page}
-          totalPages={Math.max(1, data.totalPages)}
-          onChange={setPage}
-        />
-      </DataTable>
-      {selectedId != null && <p>Selected trade id: {selectedId}</p>}
+      </div>
+      <div className="mt-4">
+        <DataTable columns={COLUMNS}>
+          <DataTable.Header columns={COLUMNS} />
+          <DataTable.Body
+            rows={data.items}
+            render={(t) => <TradeRow trade={t} onClick={handleSelect} />}
+          />
+          <DataTable.Pagination
+            page={page}
+            totalPages={Math.max(1, data.totalPages)}
+            onChange={setPage}
+          />
+        </DataTable>
+      </div>
+      {selectedId != null && (
+        <p className="mt-3 text-sm text-slate">Selected trade id: <span className="figures text-ink">{selectedId}</span></p>
+      )}
     </section>
   );
 }

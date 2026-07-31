@@ -1,19 +1,30 @@
 package com.dbtraining.reconx.repository.entity;
 
-import jakarta.persistence.*;
-
 import java.time.Instant;
 import java.time.LocalDate;
 
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
 @Entity
 @Table(name = "recon_jobs")
+@EntityListeners(AuditingEntityListener.class)
 public class ReconJob {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "job_id", nullable = false, length = 36)
+    @Column(name = "job_id", unique = true, nullable = false, length = 36)
     private String jobId;
 
     @Column(name = "from_date", nullable = false)
@@ -25,9 +36,11 @@ public class ReconJob {
     @Column(nullable = false, length = 20)
     private String status = "QUEUED";
 
-    @Column(name = "started_at")
+    @CreatedDate
+    @Column(name = "started_at", updatable = false)
     private Instant startAt;
 
+    @LastModifiedDate
     @Column(name = "finished_at")
     private Instant finishedAt;
 
