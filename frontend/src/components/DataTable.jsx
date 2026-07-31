@@ -8,13 +8,14 @@ import React, { createContext, useContext } from 'react';
 const DataTableContext = createContext({ sort: null, page: 0, size: 20, columns: [] });
 
 function gridStyle(columns) {
-  return { gridTemplateColumns: `repeat(${columns.length}, minmax(0, 1fr))` };
+  const templates = columns.map((column) => column.width || 'minmax(0, 1fr)');
+  return { gridTemplateColumns: templates.join(' ') };
 }
 
 export default function DataTable({ children, columns = [], sort, page = 0, size = 20, onSortChange }) {
   return (
     <DataTableContext.Provider value={{ sort, page, size, onSortChange, columns }}>
-      <div className="overflow-hidden rounded-xl border border-line bg-paper">{children}</div>
+      <div className="w-full overflow-x-auto rounded-xl border border-line bg-paper">{children}</div>
     </DataTableContext.Provider>
   );
 }

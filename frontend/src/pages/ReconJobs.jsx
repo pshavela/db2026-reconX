@@ -9,9 +9,21 @@ const COLUMNS = [
   { key: 'fromDate', label: 'From' },
   { key: 'toDate', label: 'To' },
   { key: 'status', label: 'Status' },
+  { key: 'startedAt', label: 'Started At', width: 'minmax(10rem, 1.25fr)' },
+  { key: 'finishedAt', label: 'Finished At', width: 'minmax(10rem, 1.25fr)' },
   { key: 'tradesProcessed', label: 'Processed' },
   { key: 'breaksDetected', label: 'Breaks' },
 ];
+
+function formatTimestamp(value) {
+  if (!value) return '-';
+
+  const text = String(value).trim();
+  const match = text.match(/^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})(?::\d{2}(?:\.\d+)?)?(Z)?$/);
+
+  if (!match) return text;
+  return `${match[1]} ${match[2]}`;
+}
 
 function ReconJobs() {
   const [jobs, setJobs] = useState({ items: [], totalPages: 0 });
@@ -114,6 +126,8 @@ function ReconJobs() {
               <span className="figures text-ink">{job.fromDate}</span>
               <span className="figures text-ink">{job.toDate}</span>
               <StatusPill status={job.status} />
+              <span className="figures text-ink">{formatTimestamp(job.startedAt)}</span>
+              <span className="figures text-ink">{formatTimestamp(job.finishedAt)}</span>
               <span className="figures text-ink">{job.tradesProcessed ?? '-'}</span>
               <span className="figures text-ink">{job.breaksDetected ?? '-'}</span>
             </span>

@@ -23,7 +23,7 @@ function App() {
   return (
     <div className="min-h-screen bg-canvas text-ink">
       <header className="bg-navy">
-        <div className="mx-auto flex max-w-6xl items-center gap-8 px-6 py-4">
+        <div className="mx-auto flex max-w-7xl items-center gap-8 px-4 py-4 sm:px-6 lg:px-8">
           <h1 className="font-display text-xl font-semibold text-white">ReconX</h1>
           <nav className="flex flex-1 items-center gap-6">
             <NavLink to="/" end className={navLinkClass}>Dashboard</NavLink>
@@ -41,7 +41,7 @@ function App() {
           </button>
         </div>
       </header>
-      <main className="mx-auto max-w-6xl px-6 py-8">
+      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <Suspense fallback={<PageSkeleton />}>
           <Routes>
             <Route path="/login"      element={<Login />} />
