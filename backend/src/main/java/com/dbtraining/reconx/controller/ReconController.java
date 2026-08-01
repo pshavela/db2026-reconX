@@ -73,6 +73,15 @@ public class ReconController {
         return PagedResponse.from(breaks.findAll(pageable), it-> it);
     }
 
+    @GetMapping("/breaks")
+    @Operation(summary = "Get results for all recon breaks by status")
+    public PagedResponse<ReconBreak> resultsOpen(
+            @PageableDefault(size = 50) Pageable pageable
+    ) {
+        return PagedResponse.from(breaks.findAll(pageable), it-> it);
+    }
+
+
     @PutMapping("/results/{id}/resolve")
     @Operation(summary = "Mark a recon break as RESOLVED with a note")
     public ResponseEntity<ReconBreak> resolve(@PathVariable Long id,
