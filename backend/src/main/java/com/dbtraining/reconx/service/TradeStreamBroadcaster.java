@@ -5,6 +5,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.event.ContextClosedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -21,10 +25,10 @@ import com.dbtraining.reconx.dto.TradeResponse;
  * dedicated consumer exist — see tracking-progress/day08/NOTE-sse-temporary-bridge.md.
  */
 
-
-// For now, SSE does not work well with Spring Boot 3.0.5
-// @Component
+@Component
 public class TradeStreamBroadcaster {
+
+    private static final Logger log = LoggerFactory.getLogger(TradeStreamBroadcaster.class);
 
     private final List<SseEmitter> emitters = new CopyOnWriteArrayList<>();
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -58,5 +62,17 @@ public class TradeStreamBroadcaster {
                 }
             }
         });
+    }
+
+    @EventListener 
+    public void onContextClosed(ContextClosedEvent event) {
+         for (SseEmitter emitter : emitters) {         
+            try {
+                emitter.complete();         
+            } catch (Exception e) {             
+                log.error("Error during emitter completing");         
+            }     
+        }
+        emitters.clear();  
     }
 }

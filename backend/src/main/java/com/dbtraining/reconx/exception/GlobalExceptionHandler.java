@@ -134,7 +134,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AsyncRequestNotUsableException.class)
     @ResponseBody
     public SseEmitter sseClientDisconnect(AsyncRequestNotUsableException e) {
-        log.error("SSE Client Disconnect:");
+        log.warn("SSE Client Disconnect");
         return null;
     }
 
