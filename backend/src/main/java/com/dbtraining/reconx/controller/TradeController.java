@@ -79,7 +79,7 @@ public class TradeController {
 
     @GetMapping("/count")
     @Operation(summary = "Retrieve the number of trade filtered by their status")
-    public ResponseEntity<Long> countByStatus(@RequestParam(required = true) String status) {
+    public ResponseEntity<Long> countByStatus(@RequestParam(required = false) String status) {
         return ResponseEntity.ok(service.countByStatus(status));
     }
 

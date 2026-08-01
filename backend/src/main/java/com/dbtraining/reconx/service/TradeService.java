@@ -182,6 +182,9 @@ public class TradeService {
 
     @Transactional(readOnly = true)
     public Long countByStatus(String status) {
+        if (status == null) {
+            return tradeRepo.count();
+        }
         return tradeRepo.countByStatus(status);
     }
 }
