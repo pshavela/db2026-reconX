@@ -75,10 +75,11 @@ public class ReconController {
 
     @GetMapping("/breaks")
     @Operation(summary = "Get results for all recon breaks by status")
-    public PagedResponse<ReconBreak> resultsOpen(
+    public PagedResponse<ReconBreak> resultsByStatus(
+            @RequestParam(required = true) String status,
             @PageableDefault(size = 50) Pageable pageable
     ) {
-        return PagedResponse.from(breaks.findAll(pageable), it-> it);
+        return PagedResponse.from(breaks.findAllByStatus(status, pageable), it-> it);
     }
 
 
