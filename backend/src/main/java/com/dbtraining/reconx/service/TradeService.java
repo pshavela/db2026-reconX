@@ -45,20 +45,21 @@ public class TradeService {
     private final CounterpartyRepository cpRepo;
     private final InstrumentRepository instRepo;
     private final TradeMapper mapper;
-    private final TradeEventProducer events;
-    private final TradeMetrics metrics;
+    // private final TradeEventProducer events;
+    // private final TradeMetrics metrics;
 
     public TradeService(TradeRepository tradeRepo,
                         CounterpartyRepository cpRepo,
-                        InstrumentRepository instRepo, TradeMapper mapper,
-                        TradeEventProducer events,
-                        TradeMetrics metrics) {
+                        InstrumentRepository instRepo, TradeMapper mapper
+                        // TradeEventProducer events,
+                        // TradeMetrics metrics
+                    ) {
         this.tradeRepo = tradeRepo;
         this.cpRepo = cpRepo;
         this.instRepo = instRepo;
         this.mapper = mapper;
-        this.events = events;
-        this.metrics = metrics;
+        // this.events = events;
+        // this.metrics = metrics;
     }
 
     public Trade create(TradeRequest req, String actor) {

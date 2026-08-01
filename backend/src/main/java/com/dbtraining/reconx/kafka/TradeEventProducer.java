@@ -32,7 +32,7 @@ import org.springframework.stereotype.Component;
  *          @TransactionalEventListener), or accept eventual consistency.
  * ============================================================================
  */
-@Component
+// @Component
 public class TradeEventProducer {
 
     private static final Logger log = LoggerFactory.getLogger(TradeEventProducer.class);

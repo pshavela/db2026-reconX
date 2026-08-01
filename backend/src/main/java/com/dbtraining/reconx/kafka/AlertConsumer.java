@@ -27,12 +27,12 @@ import org.springframework.stereotype.Component;
  *    }
  * ============================================================================
  */
-@Component
+// @Component
 public class AlertConsumer {
 
     private static final Logger log = LoggerFactory.getLogger(AlertConsumer.class);
 
-    @KafkaListener(topics = "system-alerts", groupId = "alert-service")
+    // @KafkaListener(topics = "system-alerts", groupId = "alert-service")
     public void onAlert(String payload) {
         log.warn("ALERT: {}", payload);
     }

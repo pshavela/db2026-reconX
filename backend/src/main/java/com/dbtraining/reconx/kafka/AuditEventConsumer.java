@@ -41,7 +41,7 @@ import org.springframework.stereotype.Component;
  *        so Kafka delivers each message to both groups independently.
  * ============================================================================
  */
-@Component
+// @Component
 public class AuditEventConsumer {
 
     private static final Logger log = LoggerFactory.getLogger(AuditEventConsumer.class);
@@ -49,7 +49,7 @@ public class AuditEventConsumer {
 
     public AuditEventConsumer(AuditLogRepository repo) { this.repo = repo; }
 
-    @KafkaListener(topics = "trade-events", groupId = "audit-service")
+    // @KafkaListener(topics = "trade-events", groupId = "audit-service")
     public void onTradeEvent(TradeEvent e) {
         repo.save(new AuditLogEntry(
             e.eventId().toString(),
