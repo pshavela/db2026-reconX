@@ -11,6 +11,7 @@ const Trades    = lazy(() => import('@pages/Trades.jsx'));
 const Trade     = lazy(() => import('@pages/Trade.jsx'));
 const AddTrade  = lazy(() => import('@pages/AddTrade.jsx'));
 const ReconJobs = lazy(() => import('@pages/ReconJobs.jsx'));
+const Review    = lazy(() => import('@pages/Review.jsx'));
 const Login     = lazy(() => import('@pages/Login.jsx'));
 
 const navLinkClass = ({ isActive }) =>
@@ -49,7 +50,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-canvas text-ink flex">
-      <aside className="w-56 bg-navy text-white flex-shrink-0">
+      <aside className="w-56 bg-navy text-white flex-shrink-0 sticky top-0 h-screen overflow-auto">
         <div className="px-4 py-6">
           <div className="flex flex-row items-center">
             <h1 className="font-display text-xl font-semibold text-white">Recon</h1>
@@ -59,6 +60,7 @@ function App() {
             <NavLink to="/" end className={sideLinkClass}>Dashboard</NavLink>
             <NavLink to="/trades" end className={sideLinkClass}>Trades</NavLink>
             <NavLink to="/recon-jobs" className={sideLinkClass}>Recon jobs</NavLink>
+            <NavLink to="/review" className={sideLinkClass}>Review</NavLink>
             <NavLink to="/trades/new" className={sideLinkClass}>Add trade</NavLink>
           </nav>
         </div>
@@ -97,6 +99,7 @@ function App() {
               <Route path="/trades/:id" element={<Trade />} />
               <Route path="/trades/new" element={<AddTrade />} />
               <Route path="/recon-jobs" element={<ReconJobs />} />
+              <Route path="/review"     element={<Review />} />
               <Route path="*"           element={<Navigate to="/" replace />} />
             </Routes>
           </Suspense>
