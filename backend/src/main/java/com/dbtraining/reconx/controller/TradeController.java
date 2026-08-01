@@ -77,6 +77,12 @@ public class TradeController {
         return PagedResponse.from(service.list(from, to, status, counterpartyId, pageable), it -> it);
     }
 
+    @GetMapping("/count")
+    @Operation(summary = "Retrieve the number of trade filtered by their status")
+    public ResponseEntity<Long> countByStatus(@RequestParam(required = true) String status) {
+        return ResponseEntity.ok(service.countByStatus(status));
+    }
+
     @GetMapping("/{id}")
     @Operation(summary = "Get individual trade")
     public ResponseEntity<TradeResponse> get(@PathVariable Long id) {

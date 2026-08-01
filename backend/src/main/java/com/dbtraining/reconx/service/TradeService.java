@@ -179,4 +179,9 @@ public class TradeService {
             .map(mapper::toResponse)
             .orElseThrow(() -> new TradeNotFoundException(id));
     }
+
+    @Transactional(readOnly = true)
+    public Long countByStatus(String status) {
+        return tradeRepo.countByStatus(status);
+    }
 }
