@@ -52,5 +52,6 @@ export const api = {
   getTrade: (id)              => request('GET', `/v1/trades/${id}`),
   countTrades: (status)      => request('GET', `/v1/trades/count${status ? `?status=${status}` : ''}`),
   listBreaks: (params = '')  => request('GET', `/v1/recon/breaks${params}`),
+  resolveBreak: (id, body)   => request('PUT', `/v1/recon/results/${id}/resolve`, body),
   audit: (tradeRef)          => request('GET', `/v1/audit/trades/${tradeRef}`),
 };
