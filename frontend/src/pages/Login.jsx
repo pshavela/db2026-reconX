@@ -25,7 +25,10 @@ export default function Login() {
 
   return (
     <div className="mx-auto flex max-w-sm flex-col items-center pt-12">
-      <h1 className="font-display text-2xl font-semibold text-ink">ReconX</h1>
+      <div className="flex flex-row items-center">
+        <h1 className="font-display text-4xl font-semibold text-ink">Recon</h1>
+        <img src="/tiger_icon.png" alt="image" className="h-12 w-12" />
+      </div>
       <form
         onSubmit={submit}
         className="mt-6 grid w-full gap-4 rounded-xl border border-line bg-paper p-6 shadow-sm"
