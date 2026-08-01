@@ -50,5 +50,6 @@ export const api = {
   listReconJobs: (params = '') => request('GET', `/v1/recon/jobs${params}`),
   reconResults: (jobId)      => request('GET', `/v1/recon/jobs/${jobId}/results`),
   getTrade: (id)              => request('GET', `/v1/trades/${id}`),
+  countTrades: (status)      => request('GET', `/v1/trades/count${status ? `?status=${status}` : ''}`),
   audit: (tradeRef)          => request('GET', `/v1/audit/trades/${tradeRef}`),
 };

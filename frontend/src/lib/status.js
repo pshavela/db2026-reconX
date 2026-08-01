@@ -12,8 +12,8 @@ const TONES = {
 
 function toneFor(status) {
   const s = String(status || '').toUpperCase();
-  if (/(MATCH|COMPLET|SUCCESS|DONE)/.test(s) && !/UNMATCH/.test(s)) return 'success';
-  if (/(DISPUT|FAIL|UNMATCH|ERROR|REJECT)/.test(s)) return 'danger';
+  if (/(MATCH|COMPLETE|SUCCESS|DONE)/.test(s) && !/UNMATCH/.test(s)) return 'success';
+  if (/(BREAK|DISPUTED|MISSING)/.test(s)) return 'danger';
   if (/(PENDING|RUNNING|PROCESSING|QUEUED)/.test(s)) return 'warning';
   return 'neutral';
 }

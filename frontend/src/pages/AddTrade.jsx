@@ -58,72 +58,78 @@ function AddTrade() {
       <h2 className="font-display text-2xl font-semibold text-ink">Add trade</h2>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="mt-4 grid max-w-lg gap-4 rounded-xl border border-line bg-paper p-6 shadow-sm"
+        className="mt-4 grid max-w-2xl grid-cols-1 md:grid-cols-2 gap-4 rounded-xl border border-line bg-paper p-6 shadow-sm"
         noValidate
       >
-        <label className="grid gap-1 text-sm text-ink">
-          Trade ref
-          <input {...register('tradeRef')} placeholder="EQU-20260603-0001" className={inputClass} />
-        </label>
-        <FieldError message={errors.tradeRef?.message} />
+        <div className="space-y-4">
+          <label className="grid gap-1 text-sm text-ink">
+            Trade ref
+            <input {...register('tradeRef')} placeholder="EQU-20260603-0001" className={inputClass} />
+          </label>
+          <FieldError message={errors.tradeRef?.message} />
 
-        <label className="grid gap-1 text-sm text-ink">
-          Instrument id
-          <input type="number" {...register('instrumentId')} className={inputClass} />
-        </label>
-        <FieldError message={errors.instrumentId?.message} />
+          <label className="grid gap-1 text-sm text-ink">
+            Instrument id
+            <input type="number" {...register('instrumentId')} className={inputClass} />
+          </label>
+          <FieldError message={errors.instrumentId?.message} />
 
-        <label className="grid gap-1 text-sm text-ink">
-          Counterparty id
-          <input type="number" {...register('counterpartyId')} className={inputClass} />
-        </label>
-        <FieldError message={errors.counterpartyId?.message} />
+          <label className="grid gap-1 text-sm text-ink">
+            Counterparty id
+            <input type="number" {...register('counterpartyId')} className={inputClass} />
+          </label>
+          <FieldError message={errors.counterpartyId?.message} />
 
-        <label className="grid gap-1 text-sm text-ink">
-          Asset class
-          <select {...register('assetClass')} className={inputClass}>
-            <option value="EQUITY">EQUITY</option>
-            <option value="FX">FX</option>
-            <option value="BOND">BOND</option>
-            <option value="DERIVATIVE">DERIVATIVE</option>
-          </select>
-        </label>
+          <label className="grid gap-1 text-sm text-ink">
+            Asset class
+            <select {...register('assetClass')} className={inputClass}>
+              <option value="EQUITY">EQUITY</option>
+              <option value="FX">FX</option>
+              <option value="BOND">BOND</option>
+              <option value="DERIVATIVE">DERIVATIVE</option>
+            </select>
+          </label>
+        </div>
 
-        <label className="grid gap-1 text-sm text-ink">
-          Side
-          <select {...register('side')} className={inputClass}>
-            <option value="BUY">BUY</option>
-            <option value="SELL">SELL</option>
-          </select>
-        </label>
+        <div className="space-y-4">
+          <label className="grid gap-1 text-sm text-ink">
+            Side
+            <select {...register('side')} className={inputClass}>
+              <option value="BUY">BUY</option>
+              <option value="SELL">SELL</option>
+            </select>
+          </label>
 
-        <label className="grid gap-1 text-sm text-ink">
-          Quantity
-          <input type="number" step="0.0001" {...register('quantity')} className={inputClass} />
-        </label>
-        <FieldError message={errors.quantity?.message} />
+          <label className="grid gap-1 text-sm text-ink">
+            Quantity
+            <input type="number" step="0.0001" {...register('quantity')} className={inputClass} />
+          </label>
+          <FieldError message={errors.quantity?.message} />
 
-        <label className="grid gap-1 text-sm text-ink">
-          Price
-          <input type="number" step="0.0001" {...register('price')} className={inputClass} />
-        </label>
-        <FieldError message={errors.price?.message} />
+          <label className="grid gap-1 text-sm text-ink">
+            Price
+            <input type="number" step="0.0001" {...register('price')} className={inputClass} />
+          </label>
+          <FieldError message={errors.price?.message} />
 
-        <label className="grid gap-1 text-sm text-ink">
-          Trade date
-          <input type="date" {...register('tradeDate')} className={inputClass} />
-        </label>
-        <FieldError message={errors.tradeDate?.message} />
+          <label className="grid gap-1 text-sm text-ink">
+            Trade date
+            <input type="date" {...register('tradeDate')} className={inputClass} />
+          </label>
+          <FieldError message={errors.tradeDate?.message} />
 
-        <FieldError message={submitError} />
+          <FieldError message={submitError} />
+        </div>
 
-        <button
-          disabled={isSubmitting}
-          type="submit"
-          className="cursor-pointer justify-self-start rounded-lg bg-signal px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          Submit
-        </button>
+        <div className="md:col-span-2">
+          <button
+            disabled={isSubmitting}
+            type="submit"
+            className="cursor-pointer rounded-lg bg-signal px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Submit
+          </button>
+        </div>
       </form>
     </section>
   );

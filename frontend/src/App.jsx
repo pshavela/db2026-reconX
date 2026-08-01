@@ -52,7 +52,7 @@ function App() {
       <aside className="w-56 bg-navy text-white flex-shrink-0">
         <div className="px-4 py-6">
           <div className="flex flex-row items-center">
-            <h1 className="font-display text-xl font-semibold text-ink">Recon</h1>
+            <h1 className="font-display text-xl font-semibold text-white">Recon</h1>
             <img src="/tiger_icon.png" alt="image" className="h-8 w-8" />
           </div>
           <nav className="mt-6 flex flex-col gap-2">

@@ -36,18 +36,52 @@ function Dashboard() {
 
   const [jobCount, setJobCount] = useState(0);
 
+  const [totalTradesCount, setTotalTradesCount] = useState(null);
+  const [pendingCount, setPendingCount] = useState(null);
+  const [processedCount, setProcessedCount] = useState(null);
+
   useEffect(() => {
     let cancelled = false;
     api.listReconJobs('?page=0&size=1')
       .then((res) => { if (!cancelled) setJobCount(res.totalElements); })
       .catch(() => { if (!cancelled) setJobCount(0); });
+
+    // Fetch total, pending, matched and breaks counts using the count endpoint
+    Promise.all([
+      api.countTrades(),
+      api.countTrades('PENDING'),
+      api.countTrades('MATCHED'),
+      api.countTrades('BREAK'),
+    ]).then(([totalRes, pendingRes, matchedRes, breakRes]) => {
+      if (cancelled) return;
+      const parse = (r) => (r && (r.count ?? r.total ?? r.totalElements ?? Number(r))) || 0;
+      const total = parse(totalRes);
+      const pending = parse(pendingRes);
+      const matched = parse(matchedRes);
+      const breaks = parse(breakRes);
+      setTotalTradesCount(total);
+      setPendingCount(pending);
+      setProcessedCount(Math.max(0, total - pending));
+      setMatchedCount(matched);
+      setBreaksCount(breaks);
+    }).catch(() => {
+      /* ignore */
+    });
+
     return () => { cancelled = true; };
   }, []);
 
   // Without memo: filter().length is cheap enough that useMemo would just
   // add complexity for no real benefit.
-  const matched = trades.filter((t) => t.status === 'MATCHED').length;
-  const breaks = trades.filter((t) => ['UNMATCHED', 'DISPUTED'].includes(t.status)).length;
+  // const matched = trades.filter((t) => t.status === 'MATCHED').length;
+  // const breaks = trades.filter((t) => ['UNMATCHED', 'DISPUTED'].includes(t.status)).length;
+
+  // Fallback counts computed from SSE for when server counts are unavailable
+  const matchedFallback = trades.filter((t) => t.status === 'MATCHED').length;
+  const breaksFallback = trades.filter((t) => ['UNMATCHED', 'DISPUTED'].includes(t.status)).length;
+
+  const [matchedCount, setMatchedCount] = useState(null);
+  const [breaksCount, setBreaksCount] = useState(null);
 
   const navigate = useNavigate();
 
@@ -76,11 +110,17 @@ function Dashboard() {
     <section>
       <h2 className="font-display text-2xl font-semibold text-ink">Dashboard</h2>
       <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
-        <StatCard label="Portfolio value (USD)" value={portfolioValue.toLocaleString()} accent="signal" />
-        <StatCard label="Trades streamed" value={trades.length} />
-        <StatCard label="Matched" value={matched} accent="success" />
-        <StatCard label="Recon jobs" value={jobCount} />
-        <StatCard label="Open breaks" value={breaks} accent="danger" />
+        {/* Portfolio value (from SSE) — commented out in favor of server counts */}
+        {/* <StatCard label="Portfolio value (USD)" value={portfolioValue.toLocaleString()} accent="signal" /> */}
+
+        {/* Trades streamed (from SSE) — commented out */}
+        {/* <StatCard label="Trades streamed" value={trades.length} /> */}
+
+        <StatCard label="Total trades" value={totalTradesCount ?? '0'} />
+        <StatCard label="Trades processed" value={processedCount ?? '0'} />
+        <StatCard label="Matched" value={matchedCount ?? matchedFallback} accent="success" />
+        <StatCard label="Open breaks" value={breaksCount ?? breaksFallback} accent="danger" />
+        <StatCard label="Recon jobs" value={jobCount} accent="neutral" />
       </div>
       <div
         role="status"
