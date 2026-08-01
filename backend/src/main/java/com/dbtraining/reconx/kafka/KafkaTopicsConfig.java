@@ -41,4 +41,6 @@ import org.springframework.context.annotation.Profile;
 public class KafkaTopicsConfig {
 
     // TODO(TICKET-ADV128 + ADV134): declare the 4 NewTopic @Beans — see comments above.
+
+    // not necessary in dev
 }
