@@ -172,4 +172,11 @@ public class TradeService {
                         .and(TradeSpecifications.hasAssetClass(assetClass))
         );
     }
+
+    @Transactional(readOnly = true)
+    public TradeResponse getTrade(Long id) {
+        return tradeRepo.findById(id)
+            .map(mapper::toResponse)
+            .orElseThrow(() -> new TradeNotFoundException(id));
+    }
 }

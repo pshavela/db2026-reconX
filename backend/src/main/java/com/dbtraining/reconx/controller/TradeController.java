@@ -77,6 +77,12 @@ public class TradeController {
         return PagedResponse.from(service.list(from, to, status, counterpartyId, pageable), it -> it);
     }
 
+    @GetMapping("/{id}")
+    @Operation(summary = "Get individual trade")
+    public ResponseEntity<TradeResponse> get(@PathVariable Long id) {
+        return ResponseEntity.ok(service.getTrade(id));
+    }
+
     @PostMapping
     @Operation(summary = "Create a trade")
     public ResponseEntity<TradeResponse> create(@Valid @RequestBody TradeRequest req,

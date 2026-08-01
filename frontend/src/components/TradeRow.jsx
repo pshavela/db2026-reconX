@@ -1,12 +1,16 @@
 // TICKET-ADV119 — <TradeRow>: memoised trade row, only re-renders when the
-// fields it actually displays (id, status, price) or onClick change.
+// fields it actually displays (id, status, price, created) or onClick change.
 import React from 'react';
 import { StatusPill } from '@components/StatusPill.jsx';
+import { formatTimestamp } from '@/lib/utils';
 
 function TradeRowImpl({ trade, onClick }) {
   // `contents` (Tailwind's display: contents) keeps this wrapper out of the
   // grid layout — DataTable's row is `display: grid` over direct children,
   // and a real wrapping element here would break that column alignment.
+  const createdRaw = trade.createdAt || trade.created_at || trade.tradeDate || trade.created || '';
+  const created = createdRaw ? formatTimestamp(createdRaw) : '—';
+
   return (
     <span
       onClick={() => onClick(trade.id)}
@@ -17,16 +21,21 @@ function TradeRowImpl({ trade, onClick }) {
       <span className="figures text-ink">{trade.quantity}</span>
       <span className="figures text-ink">{trade.price}</span>
       <StatusPill status={trade.status} />
+      <span className="text-slate">{created}</span>
     </span>
   );
 }
 
 // Custom equality — only the fields we actually render, not the whole trade object.
 function areEqual(prev, next) {
+  const prevCreated = prev.trade.createdAt || prev.trade.created_at || prev.trade.tradeDate || prev.trade.created || '';
+  const nextCreated = next.trade.createdAt || next.trade.created_at || next.trade.tradeDate || next.trade.created || '';
+
   return prev.trade.id === next.trade.id
       && prev.trade.status === next.trade.status
       && prev.trade.price === next.trade.price
-      && prev.onClick === next.onClick;
+      && prev.onClick === next.onClick
+      && prevCreated === nextCreated;
 }
 
 export const TradeRow = React.memo(TradeRowImpl, areEqual);

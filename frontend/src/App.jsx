@@ -37,7 +37,7 @@ function App() {
           <h1 className="font-display text-xl font-semibold">ReconX</h1>
           <nav className="mt-6 flex flex-col gap-2">
             <NavLink to="/" end className={sideLinkClass}>Dashboard</NavLink>
-            <NavLink to="/trades" className={sideLinkClass}>Trades</NavLink>
+            <NavLink to="/trades" end className={sideLinkClass}>Trades</NavLink>
             <NavLink to="/recon-jobs" className={sideLinkClass}>Recon jobs</NavLink>
             <NavLink to="/trades/new" className={sideLinkClass}>Add trade</NavLink>
           </nav>

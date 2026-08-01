@@ -14,6 +14,7 @@ const COLUMNS = [
   { key: 'qty',      label: 'Qty' },
   { key: 'price',    label: 'Price' },
   { key: 'status',   label: 'Status' },
+  { key: 'created',  label: 'Created' },
 ];
 
 function Trades() {

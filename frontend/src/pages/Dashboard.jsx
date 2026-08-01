@@ -4,6 +4,9 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { withAuth } from '@components/withAuth.jsx';
 import { useTradeStream } from '@hooks/useTradeStream.js';
 import { api } from '@services/apiService.js';
+import DataTable from '@components/DataTable.jsx';
+import { TradeRow } from '@components/TradeRow.jsx';
+import { useNavigate } from 'react-router-dom';
 
 const ACCENTS = {
   signal: 'border-l-signal',
@@ -46,6 +49,29 @@ function Dashboard() {
   const matched = trades.filter((t) => t.status === 'MATCHED').length;
   const breaks = trades.filter((t) => ['UNMATCHED', 'DISPUTED'].includes(t.status)).length;
 
+  const navigate = useNavigate();
+
+  const COLUMNS = [
+    { key: 'tradeRef', label: 'Ref' },
+    { key: 'symbol',   label: 'Symbol' },
+    { key: 'qty',      label: 'Qty' },
+    { key: 'price',    label: 'Price' },
+    { key: 'status',   label: 'Status' },
+    { key: 'created',  label: 'Created' },
+  ];
+
+  const [fallbackRecent, setFallbackRecent] = useState([]);
+  useEffect(() => {
+    let cancelled = false;
+    // Fetch last 10 trades as a fallback if SSE doesn't provide any yet
+    api.listTrades('?page=0&size=10')
+      .then((res) => { if (!cancelled && res && Array.isArray(res.items)) setFallbackRecent(res.items); })
+      .catch(() => { /* ignore */ });
+    return () => { cancelled = true; };
+  }, []);
+
+  const recent = trades.length ? trades.slice(0, 10) : fallbackRecent.slice(0, 10);
+
   return (
     <section>
       <h2 className="font-display text-2xl font-semibold text-ink">Dashboard</h2>
@@ -67,8 +93,19 @@ function Dashboard() {
         />
         SSE: {isConnected ? 'connected' : 'disconnected'}
       </div>
+
+      <div className="mt-6">
+        <h3 className="font-display text-lg font-semibold text-ink">Latest Trades</h3>
+        <div className="mt-3">
+          <DataTable columns={COLUMNS}>
+            <DataTable.Header columns={COLUMNS} />
+            <DataTable.Body rows={recent} render={(t) => <TradeRow trade={t} onClick={(id) => navigate(`/trades/${id}`)} />} />
+          </DataTable>
+        </div>
+      </div>
     </section>
   );
 }
+
 
 export default withAuth(Dashboard);
