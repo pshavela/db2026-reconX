@@ -1,6 +1,7 @@
 // TICKET-ADV114 — Compound DataTable.
 // TICKET-ADV117 — useDebouncedSearch.
 import React, { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { withAuth } from '@components/withAuth.jsx';
 import DataTable from '@components/DataTable.jsx';
 import { TradeRow } from '@components/TradeRow.jsx';
@@ -24,7 +25,8 @@ function Trades() {
 
   // Reference-stable across renders — onClick prop on <TradeRow> won't change,
   // so ADV119's React.memo equality check on it actually holds.
-  const handleSelect = useCallback((id) => setSelectedId(id), []);
+  const navigate = useNavigate();
+  const handleSelect = useCallback((id) => { setSelectedId(id); navigate(`/trades/${id}`); }, [navigate]);
 
   useEffect(() => {
     let cancelled = false;

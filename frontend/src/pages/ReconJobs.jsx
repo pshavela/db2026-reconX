@@ -3,6 +3,7 @@ import { withAuth } from '@components/withAuth.jsx';
 import { api } from '@services/apiService.js';
 import DataTable from '@components/DataTable.jsx';
 import { StatusPill } from '@components/StatusPill.jsx';
+import { formatTimestamp } from '@/lib/utils';
 
 const COLUMNS = [
   { key: 'jobId', label: 'Job ID' },
@@ -14,16 +15,6 @@ const COLUMNS = [
   { key: 'tradesProcessed', label: 'Processed' },
   { key: 'breaksDetected', label: 'Breaks' },
 ];
-
-function formatTimestamp(value) {
-  if (!value) return '-';
-
-  const text = String(value).trim();
-  const match = text.match(/^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})(?::\d{2}(?:\.\d+)?)?(Z)?$/);
-
-  if (!match) return text;
-  return `${match[1]} ${match[2]}`;
-}
 
 function ReconJobs() {
   const [jobs, setJobs] = useState({ items: [], totalPages: 0 });

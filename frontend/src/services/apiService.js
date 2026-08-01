@@ -49,5 +49,6 @@ export const api = {
   runReconCsv: (formData)    => requestFormData('POST', '/v1/recon/run-upload-csv', formData),
   listReconJobs: (params = '') => request('GET', `/v1/recon/jobs${params}`),
   reconResults: (jobId)      => request('GET', `/v1/recon/jobs/${jobId}/results`),
+  getTrade: (id)              => request('GET', `/v1/trades/${id}`),
   audit: (tradeRef)          => request('GET', `/v1/audit/trades/${tradeRef}`),
 };
