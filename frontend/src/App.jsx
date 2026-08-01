@@ -60,7 +60,7 @@ function App() {
                 type="button"
                 onClick={toggle}
                 aria-label="Toggle theme"
-                className="rounded-lg border border-white/15 px-3 py-1.5 text-sm text-ink/90 transition-colors hover:border-white/30 hover:text-ink"
+                className="rounded-lg cursor-pointer border border-gray-200 px-3 py-1.5 text-sm text-ink/90 transition-colors hover:border-white/30 hover:text-ink"
               >
                 {theme === 'dark' ? '☀️ Light' : '🌙 Dark'}
               </button>

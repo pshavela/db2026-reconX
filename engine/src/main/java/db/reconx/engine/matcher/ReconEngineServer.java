@@ -66,7 +66,7 @@ public class ReconEngineServer {
                     logger.info("Received data, sleeping for 10 seconds before executing job...");
 
                     // For demo
-                    try { Thread.sleep(10_000); } catch (InterruptedException e) { throw new RuntimeException(e); }
+                    // try { Thread.sleep(10_000); } catch (InterruptedException e) { throw new RuntimeException(e); }
 
                     logger.info("Executing job with %d internal and %d external trades".formatted(internalTrades.size(), externalTrades.size()));
 

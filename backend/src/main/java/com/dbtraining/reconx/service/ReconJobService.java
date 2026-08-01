@@ -1,6 +1,9 @@
 package com.dbtraining.reconx.service;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -10,6 +13,7 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,11 +43,18 @@ public class ReconJobService {
     private final ReconJobRepository reconJobRepository;
     private final ReconJobMapper mapper;
     private final ReconJobGrpcClient jobGrpcClient;
+    private final ThreadPoolTaskExecutor executorService;
 
-    public ReconJobService(ReconJobRepository repo, ReconJobMapper mapper, ReconJobGrpcClient jobGrpcClient) {
+    public ReconJobService(
+        ReconJobRepository repo, 
+        ReconJobMapper mapper, 
+        ReconJobGrpcClient jobGrpcClient,
+        ThreadPoolTaskExecutor executorService
+    ) {
         this.reconJobRepository = repo;
         this.mapper = mapper;
         this.jobGrpcClient = jobGrpcClient;
+        this.executorService = executorService;
     }
 
     public ReconJobResponse create(ReconRunRequest req) {
@@ -78,8 +89,15 @@ public class ReconJobService {
                 )
         );
 
-        // TODO: move to different executor thread from pool
-        jobGrpcClient.triggerReconJob(jobId, csvFile, from, to);
+        // run on separate worker thread to avoid blocking caller.
+        // But first csvFile must be persisted as it is destroyed once the request is processed
+        try {
+            File dst = File.createTempFile("csvRecon", null);
+            csvFile.transferTo(dst.toPath());
+            executorService.execute(() -> jobGrpcClient.triggerReconJob(jobId, dst, from, to));
+        } catch (IllegalStateException | IOException e) {
+            throw new InvalidCSVFileException("Failed to process CSV.");
+        }
 
         return jobResponse;
     }
@@ -110,7 +128,7 @@ public class ReconJobService {
 
         void triggerReconJob(
                 String jobId,
-                MultipartFile csvFile,
+                File csvFile,
                 LocalDate from,
                 LocalDate to
         ) {
@@ -192,7 +210,7 @@ public class ReconJobService {
 
             log.info("Running remote reconciliation engine via gRPC...");
 
-            try(BufferedReader reader = new BufferedReader(new InputStreamReader(csvFile.getInputStream()))) {
+            try(BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(csvFile)))) {
                 // first stream internal trades
                 tradeService.listPending(from, to, "EQUITY").stream()
                         .map(ReconGrpcMapper::fromTradeEntity)
@@ -210,6 +228,8 @@ public class ReconJobService {
             }
 
             tradeObserver.onCompleted();
+            // remove temporary csv file
+            csvFile.delete();
         }
     }
 }
