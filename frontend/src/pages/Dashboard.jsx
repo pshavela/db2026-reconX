@@ -14,6 +14,7 @@ const ACCENTS = {
   success: 'border-l-success',
   danger: 'border-l-danger',
   slate: 'border-l-slate',
+  warning: 'border-l-warning',
 };
 
 function StatCard({ label, value, accent = 'slate' }) {
@@ -53,18 +54,21 @@ function Dashboard() {
       api.countTrades('PENDING'),
       api.countTrades('MATCHED'),
       api.countTrades('BREAK'),
-    ]).then(([totalRes, pendingRes, matchedRes, breakRes]) => {
+      api.countBreaks('RESOLVED'),
+    ]).then(([totalRes, pendingRes, matchedRes, breakRes, resolvedRes]) => {
       if (cancelled) return;
       const parse = (r) => (r && (r.count ?? r.total ?? r.totalElements ?? Number(r))) || 0;
       const total = parse(totalRes);
       const pending = parse(pendingRes);
       const matched = parse(matchedRes);
       const breaks = parse(breakRes);
+      const resolved = parse(resolvedRes);
       setTotalTradesCount(total);
       setPendingCount(pending);
       setProcessedCount(Math.max(0, total - pending));
       setMatchedCount(matched);
       setBreaksCount(breaks);
+      setResolvedCount(resolved);
     }).catch(() => {
       /* ignore */
     });
@@ -83,6 +87,7 @@ function Dashboard() {
 
   const [matchedCount, setMatchedCount] = useState(null);
   const [breaksCount, setBreaksCount] = useState(null);
+  const [resolvedCount, setResolvedCount] = useState(null);
 
   const navigate = useNavigate();
 
@@ -141,11 +146,12 @@ function Dashboard() {
       <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="lg:col-span-1">
           <div className="grid grid-cols-2 gap-3 min-h-[320px]">
-            <StatCard label="Total trades" value={totalTradesCount ?? '0'} />
-            <StatCard label="Trades processed" value={processedCount ?? '0'} />
+            <StatCard label="Total Trades" value={totalTradesCount ?? '0'} />
+            <StatCard label="Trades Processed" value={processedCount ?? '0'} />
             <StatCard label="Matched" value={matchedCount ?? matchedFallback} accent="success" />
-            <StatCard label="Open breaks" value={breaksCount ?? breaksFallback} accent="danger" />
-            <StatCard label="Recon jobs" value={jobCount} accent="neutral" />
+            <StatCard label="Open Breaks" value={breaksCount ?? breaksFallback} accent="danger" />
+            <StatCard label="Recon Jobs" value={jobCount} accent="neutral" />
+            <StatCard label="Resolved Breaks" value={resolvedCount ?? '0'} accent="warning" />
             <div />
           </div>
         </div>

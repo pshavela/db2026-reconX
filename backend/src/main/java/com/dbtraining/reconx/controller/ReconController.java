@@ -82,6 +82,13 @@ public class ReconController {
         return PagedResponse.from(breaks.findAllByStatus(status, pageable), it-> it);
     }
 
+    @GetMapping("/count")
+    @Operation(summary = "Count all breaks by status")
+    public ResponseEntity<Long> countByStatus(@RequestParam(required = true) String status) {
+        return ResponseEntity.ok(breaks.countByStatus(status));
+    }
+
+
 
     @PutMapping("/results/{id}/resolve")
     @Operation(summary = "Mark a recon break as RESOLVED with a note")
