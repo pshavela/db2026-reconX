@@ -35,6 +35,8 @@ QUANTITY_MIN, QUANTITY_MAX = 1.0, 100.0
 PRICE_MIN, PRICE_MAX = 10.0, 500.0
 START_DATE = date(2026, 1, 1)
 END_DATE = date(2026, 6, 30)
+TOTAL_DAYS = (END_DATE - START_DATE).days
+DIST_MODES = 2
 
 INTERNAL_FILE = "internal_trades.csv"
 EXTERNAL_FILE = "external_trades.csv"
@@ -43,20 +45,41 @@ EXTERNAL_FILE = "external_trades.csv"
 rng = random.Random(SEED)
 
 
-def random_date(rng: random.Random) -> date:
-    total_days = (END_DATE - START_DATE).days + 1
-    return START_DATE + timedelta(days=rng.randrange(total_days))
+def random_dates(rng: random.Random, size: int) -> list:
+    # get random date of multi-modal distribution for better demo with numpy,
+    # otherwise use uniform random    
+    fn = lambda : rng.randrange(TOTAL_DAYS)
+
+    try:
+        import numpy as np
+        # most of the probability mass to be assigned to randomly chosen MODES
+        N = 10000
+        # trial and error
+        sigma_max = np.sqrt(TOTAL_DAYS) * 2
+        bins = list(range(TOTAL_DAYS + 1))
+        
+        norm_rng = np.random.default_rng()
+        sample = np.concat([
+            norm_rng.normal(rng.randint(0, TOTAL_DAYS), scale= 1e-6 + np.random.rand() * sigma_max, size=N)
+            for _ in range(DIST_MODES)
+        ])
+
+        h, _ = np.histogram(sample, bins, (0, TOTAL_DAYS), density=True)
+        fn = lambda: int(np.random.choice(bins[:-1], p=h))
+    except ImportError:
+        pass
+    
+    return [START_DATE + timedelta(days=fn()) for _ in range(size)]
 
 
-def gen_trade_ref(prefix_letters: str, trade_date: date, counter: int) -> str:
-    """Return tradeRef like AAA-YYYYMMDD-NNNN. counter is integer used for the last 4 digits."""
-    date_part = trade_date.strftime("%Y%m%d")
-    return f"{prefix_letters}-{date_part}-{counter:04d}"
-
-
-def random_letters(rng: random.Random, length: int = 3) -> str:
-    return ''.join(rng.choice(string.ascii_uppercase) for _ in range(length))
-
+def gen_trade_ref() -> str:
+    return f"{
+        ''.join(str(rng.choice(string.ascii_uppercase)) for _ in range(3))
+        }-{
+            ''.join(str(rng.choice(range(10))) for _ in range(8))
+        }-{
+            ''.join(str(rng.choice(range(10))) for _ in range(4))
+            }"
 
 def format_float(v: float) -> str:
     # keep reasonable precision
@@ -67,10 +90,11 @@ def make_internal_trades(T: int) -> List[Dict[str, str]]:
     trades: List[Dict[str, str]] = []
     used_refs = set()
     counter = 1
+    dates = random_dates(rng, T)
+
     while len(trades) < T:
-        tdate = random_date(rng)
-        letters = random_letters(rng, 3)
-        trade_ref = gen_trade_ref(letters, tdate, counter)
+        tdate = dates[counter - 1]
+        trade_ref = gen_trade_ref()
         # ensure uniqueness; if collision, bump counter and retry
         if trade_ref in used_refs:
             counter += 1

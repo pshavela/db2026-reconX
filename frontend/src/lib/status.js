@@ -13,7 +13,7 @@ const TONES = {
 function toneFor(status) {
   const s = String(status || '').toUpperCase();
   if (/(MATCH|COMPLETE|SUCCESS|DONE)/.test(s) && !/UNMATCH/.test(s)) return 'success';
-  if (/(BREAK|DISPUTED|MISSING)/.test(s)) return 'danger';
+  if (/(BREAK|DISPUTED|MISSING|FAILED)/.test(s)) return 'danger';
   if (/(PENDING|RUNNING|PROCESSING|QUEUED)/.test(s)) return 'warning';
   return 'neutral';
 }

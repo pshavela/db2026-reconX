@@ -48,7 +48,7 @@ export default function TradeVolumeChart({ data = sampleData, height = 320 }) {
             tickSize: 5,
             tickPadding: 5,
             tickRotation: 0,
-            legend: 'trades',
+            legend: 'Trades',
             legendOffset: -40,
             legendPosition: 'middle',
           }}
