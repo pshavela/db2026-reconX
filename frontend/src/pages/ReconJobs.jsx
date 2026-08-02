@@ -57,7 +57,7 @@ function ReconJobs() {
 
   return (
     <section>
-      <h2 className="font-display text-2xl font-semibold text-ink">Recon jobs</h2>
+      <h2 className="font-display text-2xl font-semibold text-ink">Recon Jobs</h2>
 
       <form
         onSubmit={handleFileSubmit}

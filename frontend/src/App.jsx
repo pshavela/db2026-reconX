@@ -59,7 +59,7 @@ function App() {
           <nav className="mt-6 flex flex-col gap-2">
             <NavLink to="/" end className={sideLinkClass}>Dashboard</NavLink>
             <NavLink to="/trades" end className={sideLinkClass}>Trades</NavLink>
-            <NavLink to="/recon-jobs" className={sideLinkClass}>Recon jobs</NavLink>
+            <NavLink to="/recon-jobs" className={sideLinkClass}>Recon Jobs</NavLink>
             <NavLink to="/review" className={sideLinkClass}>Review</NavLink>
             <NavLink to="/trades/new" className={sideLinkClass}>Add trade</NavLink>
           </nav>
