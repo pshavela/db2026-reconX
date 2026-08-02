@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dbtraining.reconx.dto.TradeMapper;
 import com.dbtraining.reconx.dto.TradeRequest;
 import com.dbtraining.reconx.dto.TradeResponse;
+import com.dbtraining.reconx.dto.VolumeResponse;
 import com.dbtraining.reconx.exception.CounterpartyNotFoundException;
 import com.dbtraining.reconx.exception.DuplicateTradeRefException;
 import com.dbtraining.reconx.exception.InstrumentNotFoundException;
@@ -187,5 +188,13 @@ public class TradeService {
             return tradeRepo.count();
         }
         return tradeRepo.countByStatus(status);
+    }
+
+    @Transactional(readOnly = true)
+    public List<VolumeResponse> volumeBetween(LocalDate from, LocalDate to) {
+        return tradeRepo.countVolumeBetween(from, to)
+            .stream()
+            .map(arr -> new VolumeResponse((LocalDate) arr[0], (Long) arr[1]))
+            .toList();
     }
 }

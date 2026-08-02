@@ -38,4 +38,13 @@ public interface TradeRepository
                               Pageable pageable);
 
     long countByStatus(String status);
+
+    @Query("""
+            SELECT t.tradeDate, COUNT(t.id)
+            FROM Trade t
+            WHERE t.tradeDate BETWEEN :from AND :to
+            GROUP BY t.tradeDate
+            ORDER BY t.tradeDate 
+            """)
+    List<Object []> countVolumeBetween(@Param("from") LocalDate from, @Param("to") LocalDate to);
 }

@@ -2,6 +2,7 @@ package com.dbtraining.reconx.controller;
 
 import java.net.URI;
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -26,6 +27,7 @@ import com.dbtraining.reconx.dto.StatusUpdate;
 import com.dbtraining.reconx.dto.TradeMapper;
 import com.dbtraining.reconx.dto.TradeRequest;
 import com.dbtraining.reconx.dto.TradeResponse;
+import com.dbtraining.reconx.dto.VolumeResponse;
 import com.dbtraining.reconx.repository.entity.Trade;
 import com.dbtraining.reconx.service.TradeService;
 import com.dbtraining.reconx.service.TradeStreamBroadcaster;
@@ -87,6 +89,14 @@ public class TradeController {
     @Operation(summary = "Get individual trade")
     public ResponseEntity<TradeResponse> get(@PathVariable Long id) {
         return ResponseEntity.ok(service.getTrade(id));
+    }
+
+    @GetMapping("/volume")
+    @Operation(summary = "Retrieve the Volume filtered by time frame")
+    public ResponseEntity<List<VolumeResponse>> volumeBetween(
+        @RequestParam(required = true) LocalDate from,
+        @RequestParam(required = true) LocalDate to) {
+        return ResponseEntity.ok(service.volumeBetween(from, to));
     }
 
     @PostMapping
