@@ -45,10 +45,10 @@ import org.apache.kafka.common.TopicPartition;
  *          recoverer does NOT auto-create the topic.
  * ============================================================================
  */
-// @Configuration
+@Configuration
 public class KafkaErrorHandlerConfig {
 
-    // @Bean
+    @Bean
     public DefaultErrorHandler errorHandler(KafkaTemplate<Object, Object> template) {
         DeadLetterPublishingRecoverer recoverer = new DeadLetterPublishingRecoverer(
                 template,
