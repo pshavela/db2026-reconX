@@ -18,8 +18,9 @@ import com.dbtraining.reconx.model.FXTrade;
 import com.dbtraining.reconx.model.ReconciliationRule;
 import com.dbtraining.reconx.model.TradeRef;
 import com.dbtraining.reconx.model.TradeType;
+import com.dbtraining.reconx.observability.ReconMetrics;
 
-import io.micrometer.core.annotation.Timed;
+// import io.micrometer.core.annotation.Timed;
 
 /**
  * ============================================================================
@@ -42,7 +43,36 @@ import io.micrometer.core.annotation.Timed;
 @Service
 public class ReconciliationEngine {
 
-    @Timed(value = "reconciliation.duration", description = "Wall time of reconcile()",
+    private final ReconMetrics metrics; // 2. Add the metrics dependency
+
+    // 3. Inject it via the constructor
+    public ReconciliationEngine(ReconMetrics metrics) {
+        this.metrics = metrics;
+    }
+
+    // 4. Remove the @Timed annotation
+    public List<ReconResult> reconcile(List<TradeType> internal,
+                                       List<TradeType> external,
+                                       ReconciliationRule rule) {
+        
+        // 5. Wrap the method body in metrics.reconciliationTimer().record(() -> { ... })
+        return metrics.reconciliationTimer().record(() -> {
+            if (internal == null || internal.isEmpty() ) {
+                return List.of();
+            }
+            if(external==null){
+                external= List.<TradeType>of();
+            }
+            Map<TradeRef, TradeType> externalTradeRefToTrade = external.stream()
+                    .collect(Collectors.toMap(TradeType::tradeRef, Function.identity(), (a, b) -> a));
+
+            return internal.parallelStream()
+                    .map(in -> matchOne(in, externalTradeRefToTrade.get(in.tradeRef()), rule))
+                    .toList();
+        });
+    }
+
+/*    @Timed(value = "reconciliation.duration", description = "Wall time of reconcile()",
            percentiles = {0.5, 0.95, 0.99}, histogram = true)
     public List<ReconResult> reconcile(List<TradeType> internal,
                                        List<TradeType> external,
@@ -59,7 +89,7 @@ public class ReconciliationEngine {
         return internal.parallelStream()
                 .map(in -> matchOne(in, externalTradeRefToTrade.get(in.tradeRef()), rule))
                 .toList();
-    }
+    }*/
 
     /**
      * TICKET-ADV037 — split by counterparty, reconcile each batch concurrently,

@@ -5,6 +5,7 @@ import com.dbtraining.reconx.repository.InstrumentRepository;
 import com.dbtraining.reconx.repository.entity.Instrument;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * TICKET-ADV081 — @Cacheable on findBySymbol (cache name "instruments").
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
  *
  * Symbol lookup is hot — most requests touch the cache, not the DB.
  */
+@Slf4j
 @Service
 public class InstrumentService {
 
@@ -19,12 +21,15 @@ public class InstrumentService {
 
     public InstrumentService(InstrumentRepository repo) { this.repo = repo; }
 
-    @Cacheable("instruments")
+    @Cacheable(value = "instruments", key = "#symbol")
     public Instrument findBySymbol(String symbol) {
         // TODO(TICKET-ADV081): return repo.findBySymbol(symbol)
         //   .orElseThrow(() -> new InvalidTradeException("Unknown instrument symbol: " + symbol)).
         //   The @Cacheable annotation above is what makes the second call cheap —
         //   verify the cache hit-rate via /actuator/caches once you wire this up.
-        throw new UnsupportedOperationException("TICKET-ADV081");
+        // This log line proves if we hit the DB or the cache
+        log.info("DB hit for {}", symbol);
+        return repo.findBySymbol(symbol)
+                   .orElseThrow(() -> new InvalidTradeException("Unknown instrument symbol: " + symbol));
     }
 }

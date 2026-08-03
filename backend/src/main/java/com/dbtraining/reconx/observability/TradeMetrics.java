@@ -52,17 +52,19 @@ public class TradeMetrics {
                 .publishPercentileHistogram()
                 .register(registry);
 
-        // TICKET-ADV085 — polled gauge wrapping a repository count.
+       /* // TICKET-ADV085 — polled gauge wrapping a repository count.
         Gauge.builder("recon_break_count", breakRepo, r -> r.countByStatus("OPEN"))
                 .description("Open recon breaks")
-                .register(registry);
+                .register(registry); */
     }
 
     public void incrementTradeCreated() {
         // TODO(TICKET-ADV083): increment the tradeCreated counter.
+        tradeCreated.increment();
     }
 
     public void recordTradeValue(double value) {
         // TODO(TICKET-ADV086): record the value on the tradeValue distribution summary.
+        tradeValue.record(value);
     }
 }
