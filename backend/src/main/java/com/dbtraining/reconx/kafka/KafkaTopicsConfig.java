@@ -36,27 +36,32 @@ import org.springframework.kafka.config.TopicBuilder;
  * only logs the trigger. It's provisioned infrastructure for a future
  * ticket, not wired to anything today.
  * ============================================================================
+ *
+ *  DISABLED — see docs/KAFKA.md "Re-enabling Kafka" to turn this back on.
+ *  Topics can still be created independently of the backend via
+ *  scripts/kafka-init-topics.sh, with the same partition counts as below.
+ * ============================================================================
  */
-@Configuration
-@Profile("!test")
+// @Configuration
+// @Profile("!test")
 public class KafkaTopicsConfig {
 
-    @Bean
+    // @Bean
     public NewTopic tradeEvents() {
         return TopicBuilder.name("trade-events").partitions(3).replicas(1).build();
     }
 
-    @Bean
+    // @Bean
     public NewTopic reconResults() {
         return TopicBuilder.name("recon-results").partitions(2).replicas(1).build();
     }
 
-    @Bean
+    // @Bean
     public NewTopic systemAlerts() {
         return TopicBuilder.name("system-alerts").partitions(1).replicas(1).build();
     }
 
-    @Bean
+    // @Bean
     public NewTopic tradeEventsDlq() {
         return TopicBuilder.name("trade-events-dlq").partitions(3).replicas(1).build();
     }

@@ -30,13 +30,16 @@ import org.springframework.stereotype.Component;
  *        // the consumer thread and back up the partition).
  *    }
  * ============================================================================
+ *
+ *  DISABLED — see docs/KAFKA.md "Re-enabling Kafka" to turn this back on.
+ * ============================================================================
  */
-@Component
+// @Component
 public class ReconciliationConsumer {
 
     private static final Logger log = LoggerFactory.getLogger(ReconciliationConsumer.class);
 
-    @KafkaListener(topics = "trade-events", groupId = "recon-service")
+    // @KafkaListener(topics = "trade-events", groupId = "recon-service")
     public void onTradeEvent(TradeEvent event) {
         log.info("Recon-trigger received eventId={} ref={} type={}",
                 event.eventId(), event.tradeRef(), event.eventType());

@@ -56,21 +56,22 @@ public class TradeService {
     private final CounterpartyRepository cpRepo;
     private final InstrumentRepository instRepo;
     private final TradeMapper mapper;
-    private final TradeEventProducer events;
+    // DISABLED (TICKET-ADV129) — see docs/KAFKA.md "Re-enabling Kafka".
+    // private final TradeEventProducer events;
     private final TradeMetrics metrics;
     private final ObjectMapper objectMapper;
 
     public TradeService(TradeRepository tradeRepo,
                         CounterpartyRepository cpRepo,
                         InstrumentRepository instRepo, TradeMapper mapper,
-                        TradeEventProducer events,
+                        // TradeEventProducer events,
                         TradeMetrics metrics,
                         ObjectMapper objectMapper) {
         this.tradeRepo = tradeRepo;
         this.cpRepo = cpRepo;
         this.instRepo = instRepo;
         this.mapper = mapper;
-        this.events = events;
+        // this.events = events;
         this.metrics = metrics;
         this.objectMapper = objectMapper;
     }
@@ -122,14 +123,15 @@ public class TradeService {
 
         Trade saved = tradeRepo.save(trade);
 
-        events.publish(new TradeEvent(
-                UUID.randomUUID(),
-                saved.getTradeRef(),
-                TradeEvent.EventType.TRADE_CREATED,
-                Instant.now(),
-                actor,
-                null,
-                toJson(saved)));
+        // DISABLED (TICKET-ADV129) — see docs/KAFKA.md "Re-enabling Kafka".
+        // events.publish(new TradeEvent(
+        //         UUID.randomUUID(),
+        //         saved.getTradeRef(),
+        //         TradeEvent.EventType.TRADE_CREATED,
+        //         Instant.now(),
+        //         actor,
+        //         null,
+        //         toJson(saved)));
 
         return saved;
     }
@@ -155,7 +157,8 @@ public class TradeService {
             throw new CounterpartyNotFoundException(req.counterpartyId());
         }
 
-        String beforeJson = toJson(trade);
+        // DISABLED (TICKET-ADV129) — see docs/KAFKA.md "Re-enabling Kafka".
+        // String beforeJson = toJson(trade);
 
         trade.setInstrument(instrument);
         trade.setCounterparty(counterparty);
@@ -167,14 +170,14 @@ public class TradeService {
 
         Trade saved = tradeRepo.save(trade);
 
-        events.publish(new TradeEvent(
-                UUID.randomUUID(),
-                saved.getTradeRef(),
-                TradeEvent.EventType.TRADE_UPDATED,
-                Instant.now(),
-                actor,
-                beforeJson,
-                toJson(saved)));
+        // events.publish(new TradeEvent(
+        //         UUID.randomUUID(),
+        //         saved.getTradeRef(),
+        //         TradeEvent.EventType.TRADE_UPDATED,
+        //         Instant.now(),
+        //         actor,
+        //         beforeJson,
+        //         toJson(saved)));
 
         return saved;
     }
@@ -186,20 +189,21 @@ public class TradeService {
             throw new TradeNotFoundException(id);
         }
 
-        String beforeJson = toJson(trade);
+        // DISABLED (TICKET-ADV129) — see docs/KAFKA.md "Re-enabling Kafka".
+        // String beforeJson = toJson(trade);
 
         trade.setStatus(status);
 
         Trade saved = tradeRepo.save(trade);
 
-        events.publish(new TradeEvent(
-                UUID.randomUUID(),
-                saved.getTradeRef(),
-                TradeEvent.EventType.TRADE_UPDATED,
-                Instant.now(),
-                actor,
-                beforeJson,
-                toJson(saved)));
+        // events.publish(new TradeEvent(
+        //         UUID.randomUUID(),
+        //         saved.getTradeRef(),
+        //         TradeEvent.EventType.TRADE_UPDATED,
+        //         Instant.now(),
+        //         actor,
+        //         beforeJson,
+        //         toJson(saved)));
 
         return saved;
     }
@@ -211,18 +215,19 @@ public class TradeService {
             throw new TradeNotFoundException(id);
         }
 
-        String beforeJson = toJson(trade);
+        // DISABLED (TICKET-ADV129) — see docs/KAFKA.md "Re-enabling Kafka".
+        // String beforeJson = toJson(trade);
 
         trade.softDelete();
 
-        events.publish(new TradeEvent(
-                UUID.randomUUID(),
-                trade.getTradeRef(),
-                TradeEvent.EventType.TRADE_CANCELLED,
-                Instant.now(),
-                actor,
-                beforeJson,
-                null));
+        // events.publish(new TradeEvent(
+        //         UUID.randomUUID(),
+        //         trade.getTradeRef(),
+        //         TradeEvent.EventType.TRADE_CANCELLED,
+        //         Instant.now(),
+        //         actor,
+        //         beforeJson,
+        //         null));
     }
 
     @Transactional(readOnly = true)

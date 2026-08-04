@@ -40,8 +40,11 @@ import org.springframework.stereotype.Component;
  *  HINT: The consumer is on a DIFFERENT groupId from ReconciliationConsumer
  *        so Kafka delivers each message to both groups independently.
  * ============================================================================
+ *
+ *  DISABLED — see docs/KAFKA.md "Re-enabling Kafka" to turn this back on.
+ * ============================================================================
  */
-@Component
+// @Component
 public class AuditEventConsumer {
 
     private static final Logger log = LoggerFactory.getLogger(AuditEventConsumer.class);
@@ -49,7 +52,7 @@ public class AuditEventConsumer {
 
     public AuditEventConsumer(AuditLogRepository repo) { this.repo = repo; }
 
-    @KafkaListener(topics = "trade-events", groupId = "audit-service")
+    // @KafkaListener(topics = "trade-events", groupId = "audit-service")
     public void onTradeEvent(TradeEvent e) {
         repo.save(new AuditLogEntry(
             e.eventId().toString(),

@@ -47,6 +47,12 @@ spring:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       properties:
         spring.json.add.type.headers: false
+        # Default is 60000ms — KafkaTemplate.send() blocks the calling thread
+        # for up to this long fetching cluster metadata if no broker is
+        # reachable. TradeEventProducer.publish() only calls send() after the
+        # DB transaction commits, but the HTTP request itself would still hang
+        # for a minute without this. Fail fast instead.
+        max.block.ms: 3000
     consumer:
       group-id: reconx-service
       auto-offset-reset: earliest

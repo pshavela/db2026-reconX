@@ -3,6 +3,7 @@ package com.dbtraining.reconx.kafka;
 import com.dbtraining.reconx.dto.TradeEvent;
 import com.dbtraining.reconx.repository.AuditLogRepository;
 import org.awaitility.Awaitility;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -45,6 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest
 @Testcontainers
+@Disabled("AuditEventConsumer is disabled by default — see docs/KAFKA.md \"Re-enabling Kafka\"")
 class KafkaPipelineIT {
 
     @Container

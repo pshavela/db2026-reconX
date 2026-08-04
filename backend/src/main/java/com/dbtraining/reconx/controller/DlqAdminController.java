@@ -25,12 +25,15 @@ import java.util.UUID;
  * WHY:     One-at-a-time replay (never bulk) prevents re-poisoning the same
  *          bug at scale; ADMIN-only echoes Day 5's RBAC contract.
  * ============================================================================
+ *
+ *  DISABLED (TICKET-ADV136) — see docs/KAFKA.md "Re-enabling Kafka".
+ * ============================================================================
  */
-@RestController
-@RequestMapping("/v1/admin/dlq")
-@PreAuthorize("hasRole('ADMIN')")
-@Tag(name = "admin-dlq")
-@SecurityRequirement(name = "bearerAuth")
+// @RestController
+// @RequestMapping("/v1/admin/dlq")
+// @PreAuthorize("hasRole('ADMIN')")
+// @Tag(name = "admin-dlq")
+// @SecurityRequirement(name = "bearerAuth")
 public class DlqAdminController {
 
     private final DlqMessageRepository repo;

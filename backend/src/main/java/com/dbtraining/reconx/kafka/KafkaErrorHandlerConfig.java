@@ -44,11 +44,14 @@ import org.apache.kafka.common.TopicPartition;
  *  GOTCHA: trade-events-dlq must already exist (TICKET-ADV128). The
  *          recoverer does NOT auto-create the topic.
  * ============================================================================
+ *
+ *  DISABLED — see docs/KAFKA.md "Re-enabling Kafka" to turn this back on.
+ * ============================================================================
  */
-@Configuration
+// @Configuration
 public class KafkaErrorHandlerConfig {
 
-    @Bean
+    // @Bean
     public DefaultErrorHandler errorHandler(KafkaTemplate<Object, Object> template) {
         DeadLetterPublishingRecoverer recoverer = new DeadLetterPublishingRecoverer(
                 template,

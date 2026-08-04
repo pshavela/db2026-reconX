@@ -31,8 +31,11 @@ import java.time.Instant;
  *          after ADV135's retries exhaust, a row appears here with the
  *          original topic/partition/offset and the exception message.
  * ============================================================================
+ *
+ *  DISABLED — see docs/KAFKA.md "Re-enabling Kafka" to turn this back on.
+ * ============================================================================
  */
-@Component
+// @Component
 public class DlqConsumer {
 
     private static final Logger log = LoggerFactory.getLogger(DlqConsumer.class);
@@ -45,7 +48,7 @@ public class DlqConsumer {
         this.objectMapper = objectMapper;
     }
 
-    @KafkaListener(topics = "trade-events-dlq", groupId = "dlq-monitor")
+    // @KafkaListener(topics = "trade-events-dlq", groupId = "dlq-monitor")
     public void onDlqMessage(ConsumerRecord<String, TradeEvent> record,
                              @Header(value = KafkaHeaders.DLT_EXCEPTION_MESSAGE, required = false) String exMsg) {
         TradeEvent event = record.value();
