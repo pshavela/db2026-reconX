@@ -30,6 +30,9 @@ import org.springframework.stereotype.Component;
  *        // the consumer thread and back up the partition).
  *    }
  * ============================================================================
+ *
+ *  DISABLED — see docs/KAFKA.md "Re-enabling Kafka" to turn this back on.
+ * ============================================================================
  */
 // @Component
 public class ReconciliationConsumer {

@@ -1,13 +1,21 @@
 package com.dbtraining.reconx.service;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import com.dbtraining.reconx.dto.TradeEvent;
 import com.dbtraining.reconx.dto.TradeMapper;
 import com.dbtraining.reconx.dto.TradeRequest;
 import com.dbtraining.reconx.dto.TradeResponse;
@@ -42,31 +50,50 @@ import com.dbtraining.reconx.repository.entity.Trade;
 @Transactional
 public class TradeService {
 
+    private static final Logger log = LoggerFactory.getLogger(TradeService.class);
+
     private final TradeRepository tradeRepo;
     private final CounterpartyRepository cpRepo;
     private final InstrumentRepository instRepo;
     private final TradeMapper mapper;
+    // DISABLED (TICKET-ADV129) — see docs/KAFKA.md "Re-enabling Kafka".
     // private final TradeEventProducer events;
-    // private final TradeMetrics metrics;
+    private final TradeMetrics metrics;
+    private final ObjectMapper objectMapper;
 
     public TradeService(TradeRepository tradeRepo,
                         CounterpartyRepository cpRepo,
-                        InstrumentRepository instRepo, TradeMapper mapper
+                        InstrumentRepository instRepo, TradeMapper mapper,
                         // TradeEventProducer events,
-                        // TradeMetrics metrics
-                    ) {
+                        TradeMetrics metrics,
+                        ObjectMapper objectMapper) {
         this.tradeRepo = tradeRepo;
         this.cpRepo = cpRepo;
         this.instRepo = instRepo;
         this.mapper = mapper;
         // this.events = events;
-        // this.metrics = metrics;
+        this.metrics = metrics;
+        this.objectMapper = objectMapper;
+    }
+
+    // TICKET-ADV129 — best-effort JSON snapshot for the event's before/after slots.
+    // A serialization failure must never break the trade write path, so we log and
+    // return null rather than propagate.
+    private String toJson(Trade trade) {
+        if (trade == null) {
+            return null;
+        }
+        try {
+            return objectMapper.writeValueAsString(mapper.toResponse(trade));
+        } catch (JsonProcessingException e) {
+            log.warn("Failed to serialize trade snapshot for eventId payload, tradeRef={}", trade.getTradeRef(), e);
+            return null;
+        }
     }
 
     public Trade create(TradeRequest req, String actor) {
         // TODO
         //     - metrics.incrementTradeCreated() + metrics.recordTradeValue(qty*price) — TICKET-ADV083
-        //     - events.publish(new TradeEvent(... TRADE_CREATED ... actor ...)) — TICKET-ADV129
 
         if (tradeRepo.findByTradeRef(req.tradeRef()).isPresent()) {
             throw new DuplicateTradeRefException(req.tradeRef());
@@ -94,7 +121,19 @@ public class TradeService {
                 .tradeDate(req.tradeDate())
                 .build();
 
-        return tradeRepo.save(trade);
+        Trade saved = tradeRepo.save(trade);
+
+        // DISABLED (TICKET-ADV129) — see docs/KAFKA.md "Re-enabling Kafka".
+        // events.publish(new TradeEvent(
+        //         UUID.randomUUID(),
+        //         saved.getTradeRef(),
+        //         TradeEvent.EventType.TRADE_CREATED,
+        //         Instant.now(),
+        //         actor,
+        //         null,
+        //         toJson(saved)));
+
+        return saved;
     }
 
     public Trade update(Long id, TradeRequest req, String actor) {
@@ -118,6 +157,9 @@ public class TradeService {
             throw new CounterpartyNotFoundException(req.counterpartyId());
         }
 
+        // DISABLED (TICKET-ADV129) — see docs/KAFKA.md "Re-enabling Kafka".
+        // String beforeJson = toJson(trade);
+
         trade.setInstrument(instrument);
         trade.setCounterparty(counterparty);
         trade.setPrice(req.price());
@@ -126,9 +168,18 @@ public class TradeService {
         trade.setAssetClass(req.assetClass());
         trade.setTradeDate(req.tradeDate());
 
-        // TODO publish a TRADE_UPDATED event.
+        Trade saved = tradeRepo.save(trade);
 
-        return tradeRepo.save(trade);
+        // events.publish(new TradeEvent(
+        //         UUID.randomUUID(),
+        //         saved.getTradeRef(),
+        //         TradeEvent.EventType.TRADE_UPDATED,
+        //         Instant.now(),
+        //         actor,
+        //         beforeJson,
+        //         toJson(saved)));
+
+        return saved;
     }
 
     public Trade updateStatus(Long id, String status, String actor) {
@@ -138,11 +189,23 @@ public class TradeService {
             throw new TradeNotFoundException(id);
         }
 
+        // DISABLED (TICKET-ADV129) — see docs/KAFKA.md "Re-enabling Kafka".
+        // String beforeJson = toJson(trade);
+
         trade.setStatus(status);
 
-        // TODO publish TRADE_UPDATED with the new status in the "after" slot of the event.
+        Trade saved = tradeRepo.save(trade);
 
-        return tradeRepo.save(trade);
+        // events.publish(new TradeEvent(
+        //         UUID.randomUUID(),
+        //         saved.getTradeRef(),
+        //         TradeEvent.EventType.TRADE_UPDATED,
+        //         Instant.now(),
+        //         actor,
+        //         beforeJson,
+        //         toJson(saved)));
+
+        return saved;
     }
 
     public void softDelete(Long id, String actor) {
@@ -152,9 +215,19 @@ public class TradeService {
             throw new TradeNotFoundException(id);
         }
 
+        // DISABLED (TICKET-ADV129) — see docs/KAFKA.md "Re-enabling Kafka".
+        // String beforeJson = toJson(trade);
+
         trade.softDelete();
 
-        // TODO publish a TRADE_CANCELLED event.
+        // events.publish(new TradeEvent(
+        //         UUID.randomUUID(),
+        //         trade.getTradeRef(),
+        //         TradeEvent.EventType.TRADE_CANCELLED,
+        //         Instant.now(),
+        //         actor,
+        //         beforeJson,
+        //         null));
     }
 
     @Transactional(readOnly = true)

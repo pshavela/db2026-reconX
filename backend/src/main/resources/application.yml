@@ -47,6 +47,12 @@ spring:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       properties:
         spring.json.add.type.headers: false
+        # Default is 60000ms — KafkaTemplate.send() blocks the calling thread
+        # for up to this long fetching cluster metadata if no broker is
+        # reachable. TradeEventProducer.publish() only calls send() after the
+        # DB transaction commits, but the HTTP request itself would still hang
+        # for a minute without this. Fail fast instead.
+        max.block.ms: 3000
     consumer:
       group-id: reconx-service
       auto-offset-reset: earliest
@@ -86,6 +92,18 @@ management:
         http.server.requests: 0.5, 0.95, 0.99
     tags:
       application: ${spring.application.name}
+    # TICKET-ADV139 — enables Spring Boot's Micrometer Kafka client metrics
+    # binder (MicrometerConsumerListener/ProducerListener, auto-wired onto the
+    # Kafka consumer/producer factories). The guide's own reference additionally
+    # sets spring.kafka.consumer.properties.metric.reporters to Micrometer's
+    # KafkaClientMetrics class — deliberately NOT done here: that class isn't a
+    # Kafka-native MetricsReporter, so Kafka tries to instantiate it as one and
+    # the consumer fails to start (NPE in ClassicKafkaConsumer's constructor
+    # cleanup path). This property alone is sufficient; verified live against
+    # kafka-clients 3.9.1.
+    binders:
+      kafka:
+        enabled: true
 
 # =============================================================================
 # TICKET-ADV072 — JWT signing config (NEVER commit a real secret; override per env)

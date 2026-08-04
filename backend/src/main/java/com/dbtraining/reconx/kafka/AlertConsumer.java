@@ -26,6 +26,9 @@ import org.springframework.stereotype.Component;
  *        log.warn("ALERT: {}", payload);
  *    }
  * ============================================================================
+ *
+ *  DISABLED — see docs/KAFKA.md "Re-enabling Kafka" to turn this back on.
+ * ============================================================================
  */
 // @Component
 public class AlertConsumer {

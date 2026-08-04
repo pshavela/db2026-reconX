@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -120,6 +121,26 @@ public class GlobalExceptionHandler {
         ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
         pd.setType(URI.create("https://reconx.dbtraining.com/errors/job-not-found"));
         pd.setTitle("Recon Job not Found");
+        pd.setProperty("timestamp", Instant.now());
+        return pd;
+    }
+
+    // TICKET-ADV136 — @PreAuthorize denials throw AccessDeniedException during controller
+    // invocation, which is within MVC's exception-resolution scope; without this handler it
+    // fell through to handleAny(Exception) below and returned 500 instead of 403.
+    @ExceptionHandler(AccessDeniedException.class)
+    public ProblemDetail accessDenied(AccessDeniedException ex) {
+        ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, "Access denied");
+        pd.setTitle("Forbidden");
+        pd.setProperty("timestamp", Instant.now());
+        return pd;
+    }
+
+    @ExceptionHandler(DlqMessageNotFoundException.class)
+    public ProblemDetail dlqMessageNotFound(DlqMessageNotFoundException ex) {
+        ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+        pd.setType(URI.create("https://reconx.dbtraining.com/errors/dlq-message-not-found"));
+        pd.setTitle("DLQ message not found");
         pd.setProperty("timestamp", Instant.now());
         return pd;
     }

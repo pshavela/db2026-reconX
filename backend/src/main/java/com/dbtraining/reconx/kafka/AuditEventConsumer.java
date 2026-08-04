@@ -40,6 +40,9 @@ import org.springframework.stereotype.Component;
  *  HINT: The consumer is on a DIFFERENT groupId from ReconciliationConsumer
  *        so Kafka delivers each message to both groups independently.
  * ============================================================================
+ *
+ *  DISABLED — see docs/KAFKA.md "Re-enabling Kafka" to turn this back on.
+ * ============================================================================
  */
 // @Component
 public class AuditEventConsumer {

@@ -1,0 +1,117 @@
+package com.dbtraining.reconx.kafka;
+
+import com.dbtraining.reconx.dto.TradeEvent;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.awaitility.Awaitility;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.kafka.support.serializer.JsonDeserializer;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.KafkaContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
+
+import java.time.Duration;
+import java.time.Instant;
+import java.util.List;
+import java.util.Properties;
+import java.util.UUID;
+
+import static org.apache.kafka.clients.consumer.ConsumerConfig.*;
+import static org.assertj.core.api.Assertions.assertThat;
+
+/**
+ * ============================================================================
+ * TICKET-ADV144 — Integration test: DLQ on consumer failure
+ *
+ * WHAT:    Proves the real failure path — a listener throws, ADV135's
+ *          retries exhaust, ADV134's recoverer publishes to
+ *          trade-events-dlq — using an actual application failure, not a
+ *          mocked one. Pairs with ADV143 to cover happy and unhappy paths.
+ * HOW:     Publishing the exact same TradeEvent (identical eventId) twice
+ *          is enough: AuditEventConsumer's second insert hits audit_log's
+ *          real unique constraint on event_id (see ADV132's entity) and
+ *          throws for real. A throwaway raw consumer (unique groupId, so
+ *          it never collides with the app's own consumer groups) asserts
+ *          the poisoned record lands on the DLQ.
+ * ============================================================================
+ *
+ * Adapted from the trainer guide's reference, which mocks
+ * ReconciliationEngine.scheduleRecon(...) to force the failure. That method
+ * doesn't exist on this codebase's actual ReconciliationConsumer (TICKET-
+ * ADV131) — it only logs the trigger, per its own ticket scope, and never
+ * calls ReconciliationEngine at all. Forcing a real constraint violation in
+ * AuditEventConsumer instead exercises genuine application code rather than
+ * a dependency that isn't actually wired into the Kafka path.
+ */
+@SpringBootTest
+@Testcontainers
+@Disabled("AuditEventConsumer/KafkaErrorHandlerConfig are disabled by default — see docs/KAFKA.md \"Re-enabling Kafka\"")
+class DlqRoutingIT {
+
+    @Container
+    static KafkaContainer kafka = new KafkaContainer(
+            DockerImageName.parse("confluentinc/cp-kafka:7.6.0")
+    );
+
+    @DynamicPropertySource
+    static void kafkaProps(DynamicPropertyRegistry registry) {
+        registry.add("spring.kafka.bootstrap-servers", kafka::getBootstrapServers);
+    }
+
+    @Autowired
+    private TradeEventProducer producer;
+
+    @Test
+    void duplicateEventIdRoutesToDlq() {
+        TradeEvent event = new TradeEvent(
+                UUID.randomUUID(),
+                "TRD-DLQ-1",
+                TradeEvent.EventType.TRADE_CREATED,
+                Instant.now(),
+                "integration-test",
+                null,
+                "{\"price\":100}"
+        );
+
+        producer.publish(event); // first delivery: audit row created, succeeds
+        producer.publish(event); // second delivery: same eventId -> unique constraint violation -> retries -> DLQ
+
+        Awaitility.await()
+                .atMost(Duration.ofSeconds(30))
+                .untilAsserted(() -> assertThat(dlqHas("TRD-DLQ-1")).isTrue());
+    }
+
+    private boolean dlqHas(String tradeRef) {
+        Properties p = new Properties();
+        p.put(BOOTSTRAP_SERVERS_CONFIG, kafka.getBootstrapServers());
+        p.put(GROUP_ID_CONFIG, "dlq-assert-" + System.nanoTime());
+        p.put(AUTO_OFFSET_RESET_CONFIG, "earliest");
+        p.put(KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        p.put(VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
+        p.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
+        // The app's producer sends no type headers (spring.json.add.type.headers:
+        // false, see application.yml), so a default type is required here too —
+        // without it JsonDeserializer throws "No type information in headers and
+        // no default type provided". Missing from the guide's own reference.
+        p.put(JsonDeserializer.VALUE_DEFAULT_TYPE, TradeEvent.class.getName());
+        p.put(JsonDeserializer.USE_TYPE_INFO_HEADERS, false);
+
+        try (KafkaConsumer<String, TradeEvent> consumer = new KafkaConsumer<>(p)) {
+            consumer.subscribe(List.of("trade-events-dlq"));
+            var records = consumer.poll(Duration.ofSeconds(5));
+            for (ConsumerRecord<String, TradeEvent> r : records) {
+                if (tradeRef.equals(r.value().tradeRef())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+}
